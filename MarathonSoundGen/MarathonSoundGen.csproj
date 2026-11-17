@@ -46,6 +46,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BigEndianBinaryReader.cs" />
+    <Compile Include="M1SoundsFile.cs" />
+    <Compile Include="M2SoundsFile.cs" />
+    <Compile Include="SoundDefinition.cs" />
+    <Compile Include="SoundsFileHeader.cs" />
+    <Compile Include="SoundInfo.cs" />
+    <Compile Include="MacResourceFile.cs" />
+    <Compile Include="MacResourceKey.cs" />
+    <Compile Include="MacContainerFormats.cs" />
+    <Compile Include="MacFileSpecifier.cs" />
+    <Compile Include="MacResource.cs" />
+    <Compile Include="ForkViewStream.cs" />
+    <Compile Include="MacFile.cs" />
+    <Compile Include="MacFileError.cs" />
+    <Compile Include="MacTypes.cs" />
+    <Compile Include="Enums.cs" />
+    <Compile Include="SoundsFile.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
