@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows.Forms;
 
 namespace MarathonSoundGen
@@ -16,5 +10,47 @@ namespace MarathonSoundGen
         {
             InitializeComponent();
         }
+
+        private void LoadM2SoundFile_ButtonClick(object sender, EventArgs e)
+        {
+            string filePath = PromptSelectSoundFile();
+            byte[] soundsData = SoundsUtils.OpenM2SoundFile(filePath, out SoundDefinition definition);
+        }
+
+        private static string PromptSelectSoundFile()
+        {
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Select Sound File";
+
+                // The dialog may display .sndA and extensionless files.
+                dialog.Filter = "Sound files (*.sndA; extensionless)|*.sndA;*.|sndA files (*.sndA)|*.sndA|All files (*.*)|*.*";
+
+                dialog.FilterIndex = 1;
+                dialog.CheckFileExists = true;
+                dialog.CheckPathExists = true;
+                dialog.Multiselect = false;
+                dialog.AddExtension = false;
+                dialog.RestoreDirectory = true;
+
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return string.Empty;
+                }
+
+                string fullPath = Path.GetFullPath(dialog.FileName);
+
+                // Accept only .sndA or extensionless files.
+                string extension = Path.GetExtension(fullPath);
+
+                if (string.IsNullOrEmpty(extension) || extension.Equals(".sndA", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return fullPath;
+                }
+
+                return string.Empty;
+            }
+        }
+
     }
 }
