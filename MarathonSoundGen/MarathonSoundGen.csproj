@@ -46,16 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SoundDefinition.cs" />
-    <Compile Include="SoundPermutation.cs" />
     <Compile Include="SoundsUtils.cs" />
-    <Compile Include="M1SoundsFileRaw.cs" />
-    <Compile Include="M2SoundsFileRaw.cs" />
-    <Compile Include="SoundDefinitionRaw.cs" />
-    <Compile Include="SoundsFileHeader.cs" />
-    <Compile Include="SoundInfo.cs" />
-    <Compile Include="Enums.cs" />
-    <Compile Include="SoundsFileRaw.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -93,6 +84,10 @@
     <ProjectReference Include="..\..\MacFileUtils\MacFileUtils\MacFileUtils.csproj">
       <Project>{8dc320d0-5e72-a3b6-fb51-75b3bfa03b34}</Project>
       <Name>MacFileUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\MarathonFileUtils\MarathonFileUtils\MarathonFileUtils.csproj">
+      <Project>{F82AE1C1-B4A9-733A-BD8F-9E10DA2D6D14}</Project>
+      <Name>MarathonFileUtils</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

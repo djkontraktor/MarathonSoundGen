@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="../../MacFileUtils/MacFileUtils/MacFileUtils.csproj" />
+  <Project Path="../../MarathonFileUtils/MarathonFileUtils/MarathonFileUtils.csproj" />
   <Project Path="MarathonSoundGen.csproj" Id="9a8a5ffd-e3fa-4c9b-a5cd-61a0665870ae" />
 </Solution>
