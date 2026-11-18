@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MarathonSoundGen
 {
@@ -12,6 +13,7 @@ namespace MarathonSoundGen
         public abstract SoundDefinition GetSoundDefinition(int source, int soundIndex);
         public abstract SoundsFileHeader GetSoundHeader(SoundDefinition definition, int permutation);
         public abstract byte[] GetSoundData(SoundDefinition definition, int permutation);
+        public abstract IEnumerable<int> GetSoundIndices(int source);
 
         #endregion
 

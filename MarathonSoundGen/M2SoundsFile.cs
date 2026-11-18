@@ -138,6 +138,19 @@ namespace MarathonSoundGen
             return d == null || mFile == null ? null : d.LoadData(mFile, (short)p);
         }
 
+        public override IEnumerable<int> GetSoundIndices(int source)
+        {
+            if (source < 0 || source >= mDefinitions.Count)
+            {
+                yield break;
+            }
+
+            for (int soundIndex = 0; soundIndex < mDefinitions[source].Count; soundIndex++)
+            {
+                yield return soundIndex;
+            }
+        }
+
         #endregion
 
     }

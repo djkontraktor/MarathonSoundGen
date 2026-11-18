@@ -138,6 +138,36 @@ namespace MarathonSoundGen
             return h == null ? null : h.LoadData(mCached);
         }
 
+        public override IEnumerable<int> GetSoundIndices(int source)
+        {
+            if (source != 0)
+            {
+                yield break;
+            }
+
+            List<short> resourceIds = mResources.GetResourceIds(SndType);
+            HashSet<short> idSet = new HashSet<short>(resourceIds);
+
+            int position = 0;
+
+            while (position < resourceIds.Count)
+            {
+                short baseId = resourceIds[position];
+
+                yield return baseId;
+
+                int permutationCount = 1;
+
+                while (permutationCount < MaximumPermutations && baseId + permutationCount <= short.MaxValue && idSet.Contains((short)(baseId + permutationCount)))
+                {
+                    permutationCount++;
+                }
+
+                // Skip the resource IDs treated as permutations.
+                position += permutationCount;
+            }
+        }
+
         #endregion
 
     }

@@ -30,6 +30,28 @@ namespace MarathonSoundGen
 
         #region Public Members
 
+        public List<short> GetResourceIds(uint type)
+        {
+            List<short> result = new List<short>();
+
+            if (mStream == null)
+            {
+                return result;
+            }
+
+            foreach (KeyValuePair<MacResourceKey, long> item in mEntries)
+            {
+                if (item.Key.Type == type)
+                {
+                    result.Add(item.Key.Id);
+                }
+            }
+
+            result.Sort();
+
+            return result;
+        }
+
         public bool Check(uint type, short id)
         {
             bool ok = mStream != null && mEntries.ContainsKey(new MacResourceKey(type, id));

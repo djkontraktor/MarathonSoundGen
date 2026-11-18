@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigEndianBinaryReader.cs" />
+    <Compile Include="MaraSoundDefinition.cs" />
+    <Compile Include="MaraSoundPermutation.cs" />
     <Compile Include="SoundsUtils.cs" />
     <Compile Include="M1SoundsFile.cs" />
     <Compile Include="M2SoundsFile.cs" />
