@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BigEndianBinaryReader.cs" />
     <Compile Include="SoundDefinition.cs" />
     <Compile Include="SoundPermutation.cs" />
     <Compile Include="SoundsUtils.cs" />
@@ -55,15 +54,6 @@
     <Compile Include="SoundDefinitionRaw.cs" />
     <Compile Include="SoundsFileHeader.cs" />
     <Compile Include="SoundInfo.cs" />
-    <Compile Include="MacResourceFile.cs" />
-    <Compile Include="MacResourceKey.cs" />
-    <Compile Include="MacContainerFormats.cs" />
-    <Compile Include="MacFileSpecifier.cs" />
-    <Compile Include="MacResource.cs" />
-    <Compile Include="ForkViewStream.cs" />
-    <Compile Include="MacFile.cs" />
-    <Compile Include="MacFileError.cs" />
-    <Compile Include="MacTypes.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="SoundsFileRaw.cs" />
     <Compile Include="MainForm.cs">
@@ -98,6 +88,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MacFileUtils\MacFileUtils\MacFileUtils.csproj">
+      <Project>{8dc320d0-5e72-a3b6-fb51-75b3bfa03b34}</Project>
+      <Name>MacFileUtils</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
