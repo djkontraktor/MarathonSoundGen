@@ -1,5 +1,4 @@
-﻿using MarathonFileUtils.Sounds;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows.Forms;
 
@@ -10,23 +9,29 @@ namespace MarathonSoundGen
         public MainForm()
         {
             InitializeComponent();
+
+            this.FormClosing += MainForm_FormClosing;
         }
 
-        private void LoadM2SoundFile_ButtonClick(object sender, EventArgs e)
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Dispose all
+        }
+
+        #region Control Callbacks
+
+        private void loadMarathonSoundsFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filePath = PromptSelectSoundFile();
 
-            M2SoundsFile soundsFile = new M2SoundsFile(filePath);
-
-            foreach (SoundSlot slot in soundsFile.SoundSlots)
+            if (!string.IsNullOrWhiteSpace(filePath))
             {
-                //SoundsUtils.PlaySoundSlot(slot);
-                foreach (SoundPermutation snd in slot.Samples)
-                {
-                    //SoundsUtils.PlaySound(snd);
-                }
+                SoundEngine.LoadSoundsFile(filePath);
+                currentSoundFile_toolStripLabel.Text = filePath;
             }
         }
+
+        #endregion
 
         private static string PromptSelectSoundFile()
         {
@@ -63,5 +68,6 @@ namespace MarathonSoundGen
             }
         }
 
+        
     }
 }
