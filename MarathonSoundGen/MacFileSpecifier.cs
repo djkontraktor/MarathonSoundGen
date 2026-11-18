@@ -38,8 +38,10 @@ namespace MarathonSoundGen
             try
             {
                 FileStream fs = new FileStream(Path, FileMode.Open, writable ? FileAccess.ReadWrite : FileAccess.Read, FileShare.ReadWrite);
-                long offset = 0, length = fs.Length;
-                long dataOffset, dataLength;
+                long offset = 0;
+                long length = fs.Length;
+                long dataOffset;
+                long dataLength;
 
                 if (MacContainerFormats.TryFindAppleSingleFork(fs, false, out dataOffset, out dataLength))
                 {
@@ -48,7 +50,8 @@ namespace MarathonSoundGen
                 }
                 else
                 {
-                    long dl, rl;
+                    long dl;
+                    long rl;
 
                     if (MacContainerFormats.TryReadMacBinary(fs, out dl, out rl))
                     {

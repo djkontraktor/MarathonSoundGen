@@ -5,7 +5,7 @@
 
         #region Public Properties
 
-        public AudioFormat AudioFormat { get; protected set; }
+        public int BitsPerSample { get; protected set; }
         public bool Stereo { get; protected set; }
         public bool LittleEndian { get; protected set; }
         public int BytesPerFrame { get; protected set; }
@@ -20,7 +20,7 @@
 
         public SoundInfo()
         {
-            AudioFormat = AudioFormat._8_bit;
+            BitsPerSample = 8;
             BytesPerFrame = 1;
         }
 

@@ -132,7 +132,10 @@ namespace MarathonSoundGen
                 return false;
             }
 
-            long o, l, dl, rl;
+            long o;
+            long l;
+            long dl;
+            long rl;
 
             if (MacContainerFormats.TryFindAppleSingleFork(fs, true, out o, out l))
             {

@@ -3,18 +3,18 @@ using System.Collections.Generic;
 
 namespace MarathonSoundGen
 {
-    public class M1SoundsFile : SoundsFile
+    public class M1SoundsFileRaw : SoundsFileRaw
     {
 
         #region Private Properties
 
-        private const int MaximumPermutations = 5;
+        private const int mMaximumPermutations = 5;
         private readonly MacResourceFile mResources = new MacResourceFile();
         private readonly MacResource mCached = new MacResource();
         private short mCachedCode = -1;
-        private readonly Dictionary<short, SoundDefinition> mDefinitions = new Dictionary<short, SoundDefinition>();
+        private readonly Dictionary<short, SoundDefinitionRaw> mDefinitions = new Dictionary<short, SoundDefinitionRaw>();
         private readonly Dictionary<short, SoundsFileHeader> mHeaders = new Dictionary<short, SoundsFileHeader>();
-        private static readonly uint SndType = MacTypes.FourCC('s', 'n', 'd', ' ');
+        private static readonly uint mSndType = MacTypes.FourCC('s', 'n', 'd', ' ');
 
         #endregion
 
@@ -35,25 +35,25 @@ namespace MarathonSoundGen
             mResources.Close();
         }
 
-        public override SoundDefinition GetSoundDefinition(int source, int index)
+        public override SoundDefinitionRaw GetSoundDefinition(int source, int index)
         {
-            if (index < short.MinValue || index > short.MaxValue || !mResources.Check(SndType, (short)index))
+            if (index < short.MinValue || index > short.MaxValue || !mResources.Check(mSndType, (short)index))
             {
                 return null;
             }
 
-            SoundDefinition d;
+            SoundDefinitionRaw d;
             
             if (!mDefinitions.TryGetValue((short)index, out d))
             {
-                d = new SoundDefinition
+                d = new SoundDefinitionRaw
                 {
                     BehaviorIndex = 2,
                     SoundCode = (short)index,
                     Permutations = 1
                 };
 
-                while (d.Permutations < MaximumPermutations && mResources.Check(SndType, (short)(index + d.Permutations)))
+                while (d.Permutations < mMaximumPermutations && mResources.Check(mSndType, (short)(index + d.Permutations)))
                 {
                     d.Permutations++;
                 }
@@ -64,12 +64,12 @@ namespace MarathonSoundGen
             return d;
         }
 
-        private int GetIndex(SoundDefinition d, int permutation)
+        private int GetIndex(SoundDefinitionRaw d, int permutation)
         {
-            return d.SoundCode + Math.Min(permutation, MaximumPermutations);
+            return d.SoundCode + Math.Min(permutation, mMaximumPermutations);
         }
 
-        public override SoundsFileHeader GetSoundHeader(SoundDefinition d, int permutation)
+        public override SoundsFileHeader GetSoundHeader(SoundDefinitionRaw d, int permutation)
         {
             if (d == null)
             {
@@ -89,7 +89,7 @@ namespace MarathonSoundGen
             {
                 if (mCachedCode != (short)index)
                 {
-                    if (!mResources.Get(SndType, (short)index, mCached))
+                    if (!mResources.Get(mSndType, (short)index, mCached))
                     {
                         return null;
                     }
@@ -110,7 +110,7 @@ namespace MarathonSoundGen
             return h;
         }
 
-        public override byte[] GetSoundData(SoundDefinition d, int permutation)
+        public override byte[] GetSoundData(SoundDefinitionRaw d, int permutation)
         {
             if (d == null)
             {
@@ -126,7 +126,7 @@ namespace MarathonSoundGen
 
             if (mCachedCode != (short)index)
             {
-                if (!mResources.Get(SndType, (short)index, mCached))
+                if (!mResources.Get(mSndType, (short)index, mCached))
                 {
                     return null;
                 }
@@ -145,7 +145,7 @@ namespace MarathonSoundGen
                 yield break;
             }
 
-            List<short> resourceIds = mResources.GetResourceIds(SndType);
+            List<short> resourceIds = mResources.GetResourceIds(mSndType);
             HashSet<short> idSet = new HashSet<short>(resourceIds);
 
             int position = 0;
@@ -158,7 +158,7 @@ namespace MarathonSoundGen
 
                 int permutationCount = 1;
 
-                while (permutationCount < MaximumPermutations && baseId + permutationCount <= short.MaxValue && idSet.Contains((short)(baseId + permutationCount)))
+                while (permutationCount < mMaximumPermutations && baseId + permutationCount <= short.MaxValue && idSet.Contains((short)(baseId + permutationCount)))
                 {
                     permutationCount++;
                 }

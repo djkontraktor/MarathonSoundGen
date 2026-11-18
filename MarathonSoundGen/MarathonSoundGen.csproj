@@ -47,12 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BigEndianBinaryReader.cs" />
-    <Compile Include="MaraSoundDefinition.cs" />
-    <Compile Include="MaraSoundPermutation.cs" />
-    <Compile Include="SoundsUtils.cs" />
-    <Compile Include="M1SoundsFile.cs" />
-    <Compile Include="M2SoundsFile.cs" />
     <Compile Include="SoundDefinition.cs" />
+    <Compile Include="SoundPermutation.cs" />
+    <Compile Include="SoundsUtils.cs" />
+    <Compile Include="M1SoundsFileRaw.cs" />
+    <Compile Include="M2SoundsFileRaw.cs" />
+    <Compile Include="SoundDefinitionRaw.cs" />
     <Compile Include="SoundsFileHeader.cs" />
     <Compile Include="SoundInfo.cs" />
     <Compile Include="MacResourceFile.cs" />
@@ -65,7 +65,7 @@
     <Compile Include="MacFileError.cs" />
     <Compile Include="MacTypes.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="SoundsFile.cs" />
+    <Compile Include="SoundsFileRaw.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

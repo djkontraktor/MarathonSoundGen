@@ -9,14 +9,11 @@ namespace MarathonSoundGen
     public static class SoundsUtils
     {
 
-        private static MemoryStream mWaveStream = new MemoryStream();
-        private static SoundPlayer mPlayer = new SoundPlayer(mWaveStream);
-
         #region Public Members
 
         public static void OpenM1SoundFile(string filePath)
         {
-            using (SoundsFile soundFile = new M1SoundsFile())
+            using (SoundsFileRaw soundFile = new M1SoundsFileRaw())
             {
                 //// Extensionless
                 //MacFileSpecifier file = new MacFileSpecifier(filePath);
@@ -40,11 +37,11 @@ namespace MarathonSoundGen
             }
         }
 
-        public static List<MaraSoundDefinition> OpenM2SoundFile(string filePath)
+        public static List<SoundDefinition> OpenM2SoundFile(string filePath)
         {
-            List<MaraSoundDefinition> results = new List<MaraSoundDefinition>();
+            List<SoundDefinition> results = new List<SoundDefinition>();
 
-            using (SoundsFile soundFile = new M2SoundsFile())
+            using (SoundsFileRaw soundFile = new M2SoundsFileRaw())
             {
                 // Compatible with extension .sndA
                 MacFileSpecifier file = new MacFileSpecifier(filePath);
@@ -58,14 +55,14 @@ namespace MarathonSoundGen
                 {
                     foreach (int soundIndex in soundFile.GetSoundIndices(source))
                     {
-                        SoundDefinition definition = soundFile.GetSoundDefinition(source, soundIndex);
+                        SoundDefinitionRaw definition = soundFile.GetSoundDefinition(source, soundIndex);
 
                         if (definition == null)
                         {
                             continue;
                         }
 
-                        MaraSoundDefinition maraSoundDefinition = new MaraSoundDefinition
+                        SoundDefinition maraSoundDefinition = new SoundDefinition
                         {
                             Source = source,
                             SoundIndex = soundIndex,
@@ -90,7 +87,7 @@ namespace MarathonSoundGen
                                 continue;
                             }
 
-                            maraSoundDefinition.Permutations.Add(new MaraSoundPermutation
+                            maraSoundDefinition.Permutations.Add(new SoundPermutation
                             {
                                 Source = source,
                                 SoundIndex = soundIndex,
@@ -109,11 +106,6 @@ namespace MarathonSoundGen
             return results;
         }
 
-        public static void StartAudioStreamer()
-        {
-            mPlayer.Load();
-        }
-
         public static void PlaySound(byte[] soundData, SoundsFileHeader header)
         {
             if (soundData == null)
@@ -128,8 +120,12 @@ namespace MarathonSoundGen
 
             try
             {
-                mWaveStream = CreateWaveStream(soundData, header);
-                mPlayer.PlaySync();
+                using (MemoryStream waveStream = CreateWaveStream(soundData, header))
+                using (SoundPlayer player = new SoundPlayer(waveStream))
+                {
+                    player.Load();
+                    player.PlaySync();
+                }
             }
             catch (Exception ex)
             {
@@ -137,17 +133,11 @@ namespace MarathonSoundGen
             }
         }
 
-        public static void StopAudioStreamer()
-        {
-            mPlayer.Dispose();
-            mWaveStream.Dispose();
-        }
-
         #endregion
 
         #region Private Members
 
-        private static int GetValidPermutationCount(SoundDefinition definition)
+        private static int GetValidPermutationCount(SoundDefinitionRaw definition)
         {
             if (definition == null)
             {
@@ -176,22 +166,6 @@ namespace MarathonSoundGen
         {
             int channelCount = header.Stereo ? 2 : 1;
 
-            int bitsPerSample;
-
-            switch (header.AudioFormat)
-            {
-                case AudioFormat._8_bit:
-                    bitsPerSample = 8;
-                    break;
-
-                case AudioFormat._16_bit:
-                    bitsPerSample = 16;
-                    break;
-
-                default:
-                    throw new NotSupportedException("Unsupported audio format: " + header.AudioFormat);
-            }
-
             // The System 7 sample rate is stored as unsigned 16.16
             // fixed-point. For example, 22050 Hz is 22050 << 16.
             int sampleRate = checked((int)(header.Rate >> 16));
@@ -201,7 +175,7 @@ namespace MarathonSoundGen
                 throw new InvalidDataException("The sound header contains an invalid sample rate.");
             }
 
-            int blockAlign = checked(channelCount * bitsPerSample / 8);
+            int blockAlign = checked(channelCount * header.BitsPerSample / 8);
 
             int byteRate = checked(sampleRate * blockAlign);
 
@@ -225,7 +199,7 @@ namespace MarathonSoundGen
                 writer.Write(sampleRate);
                 writer.Write(byteRate);
                 writer.Write((short)blockAlign);
-                writer.Write((short)bitsPerSample);
+                writer.Write((short)header.BitsPerSample);
 
                 // PCM data chunk
                 writer.Write(Encoding.ASCII.GetBytes("data"));

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace MarathonSoundGen
 {
-    public class M2SoundsFile : SoundsFile
+    public class M2SoundsFileRaw : SoundsFileRaw
     {
 
         #region Public Properties
@@ -20,11 +20,13 @@ namespace MarathonSoundGen
 
         #region Private Properties
 
-        private const int HeaderSize = 260, V1Unused = 124;
+        private const int mHeaderSize = 260;
+        private const int mV1Unused = 124;
         private int mVersion;
         private uint mTag;
-        private short mSourceCount, mSoundCount;
-        private readonly List<List<SoundDefinition>> mDefinitions = new List<List<SoundDefinition>>();
+        private short mSourceCount;
+        private short mSoundCount;
+        private readonly List<List<SoundDefinitionRaw>> mDefinitions = new List<List<SoundDefinitionRaw>>();
         private MacFile mFile;
 
         #endregion
@@ -41,7 +43,7 @@ namespace MarathonSoundGen
                 return false;
             }
 
-            byte[] b = new byte[HeaderSize];
+            byte[] b = new byte[mHeaderSize];
 
             if (!f.Read(b.Length, b))
             {
@@ -56,7 +58,7 @@ namespace MarathonSoundGen
                 mTag = r.ReadUInt32();
                 mSourceCount = r.ReadInt16();
                 mSoundCount = r.ReadInt16();
-                r.Skip(V1Unused * 2L);
+                r.Skip(mV1Unused * 2L);
             }
 
             if ((mVersion != 0 && mVersion != 1) || mTag != MacTypes.FourCC('s', 'n', 'd', '2') || mSoundCount < 0 || mSourceCount < 0)
@@ -73,11 +75,11 @@ namespace MarathonSoundGen
 
             for (int s = 0; s < mSourceCount; s++)
             {
-                List<SoundDefinition> list = new List<SoundDefinition>();
+                List<SoundDefinitionRaw> list = new List<SoundDefinitionRaw>();
 
                 for (int i = 0; i < mSoundCount; i++)
                 {
-                    SoundDefinition d = new SoundDefinition();
+                    SoundDefinitionRaw d = new SoundDefinitionRaw();
 
                     if (!d.Unpack(f))
                     {
@@ -92,9 +94,9 @@ namespace MarathonSoundGen
                 mDefinitions.Add(list);
             }
             
-            foreach (List<SoundDefinition> list in mDefinitions)
+            foreach (List<SoundDefinitionRaw> list in mDefinitions)
             {
-                foreach (SoundDefinition d in list)
+                foreach (SoundDefinitionRaw d in list)
                 {
                     if (!d.Load(f, true))
                     {
@@ -123,17 +125,17 @@ namespace MarathonSoundGen
             mSoundCount = 0;
         }
 
-        public override SoundDefinition GetSoundDefinition(int source, int index)
+        public override SoundDefinitionRaw GetSoundDefinition(int source, int index)
         {
             return source >= 0 && source < mDefinitions.Count && index >= 0 && index < mDefinitions[source].Count ? mDefinitions[source][index] : null;
         }
 
-        public override SoundsFileHeader GetSoundHeader(SoundDefinition d, int p)
+        public override SoundsFileHeader GetSoundHeader(SoundDefinitionRaw d, int p)
         {
             return d != null && p >= 0 && p < d.Sounds.Count ? d.Sounds[p] : null;
         }
 
-        public override byte[] GetSoundData(SoundDefinition d, int p)
+        public override byte[] GetSoundData(SoundDefinitionRaw d, int p)
         {
             return d == null || mFile == null ? null : d.LoadData(mFile, (short)p);
         }

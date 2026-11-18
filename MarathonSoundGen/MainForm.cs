@@ -15,19 +15,15 @@ namespace MarathonSoundGen
         private void LoadM2SoundFile_ButtonClick(object sender, EventArgs e)
         {
             string filePath = PromptSelectSoundFile();
-            List<MaraSoundDefinition> soundsFile = SoundsUtils.OpenM2SoundFile(filePath);
+            List<SoundDefinition> soundsFile = SoundsUtils.OpenM2SoundFile(filePath);
 
-            SoundsUtils.StartAudioStreamer();
-
-            foreach (MaraSoundDefinition soundSlot in soundsFile)
+            foreach (SoundDefinition soundSlot in soundsFile)
             {
-                foreach (MaraSoundPermutation sound in soundSlot.Permutations)
+                foreach (SoundPermutation sound in soundSlot.Permutations)
                 {
                     SoundsUtils.PlaySound(sound.Data, sound.Header);
                 }
             }
-
-            SoundsUtils.StopAudioStreamer();
         }
 
         private static string PromptSelectSoundFile()

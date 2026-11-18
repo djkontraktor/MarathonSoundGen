@@ -78,14 +78,14 @@ namespace MarathonSoundGen
                 r.Skip(mDataOffset);
                 byte[] data = r.ReadBytesExactly(Length);
 
-                if (AudioFormat == AudioFormat._8_bit && mSigned8Bits)
+                if (BitsPerSample == 8 && mSigned8Bits)
                 {
                     for (int i = 0; i < data.Length; i++)
                     {
                         data[i] = unchecked((byte)((sbyte)data[i] + 128));
                     }
                 }
-                else if (AudioFormat == AudioFormat._16_bit && BitConverter.IsLittleEndian)
+                else if (BitsPerSample == 16 && BitConverter.IsLittleEndian)
                 {
                     for (int i = 0; i + 1 < data.Length; i += 2)
                     {
@@ -197,7 +197,7 @@ namespace MarathonSoundGen
             try
             {
                 BytesPerFrame = 1;
-                AudioFormat = AudioFormat._8_bit;
+                BitsPerSample = 8;
                 Stereo = false;
                 LittleEndian = false;
                 r.Skip(4);
@@ -249,8 +249,8 @@ namespace MarathonSoundGen
                 }
 
                 short sampleSize = r.ReadInt16();
-                AudioFormat = sampleSize == 16 ? AudioFormat._16_bit : AudioFormat._8_bit;
-                BytesPerFrame = (AudioFormat == AudioFormat._16_bit ? 2 : 1) * (Stereo ? 2 : 1);
+                BitsPerSample = sampleSize == 16 ? 16 : 8;
+                BytesPerFrame = (BitsPerSample == 16 ? 2 : 1) * (Stereo ? 2 : 1);
                 Length = checked(frames * BytesPerFrame);
                 LittleEndian = false;
                 return true;
