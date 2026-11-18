@@ -40,6 +40,7 @@
             this.soundScape_dropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.playAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentSoundFile_toolStripLabel = new System.Windows.Forms.ToolStripLabel();
+            this.soundSources_TabControl = new System.Windows.Forms.TabControl();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -142,11 +143,22 @@
             this.currentSoundFile_toolStripLabel.Text = "No Sounds File Loaded.";
             this.currentSoundFile_toolStripLabel.ToolTipText = "Current Sounds File";
             // 
+            // soundSources_TabControl
+            // 
+            this.soundSources_TabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.soundSources_TabControl.Location = new System.Drawing.Point(0, 25);
+            this.soundSources_TabControl.Multiline = true;
+            this.soundSources_TabControl.Name = "soundSources_TabControl";
+            this.soundSources_TabControl.SelectedIndex = 0;
+            this.soundSources_TabControl.Size = new System.Drawing.Size(800, 425);
+            this.soundSources_TabControl.TabIndex = 2;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.soundSources_TabControl);
             this.Controls.Add(this.toolStrip);
             this.Name = "MainForm";
             this.Text = "Form1";
@@ -169,6 +181,7 @@
         private System.Windows.Forms.ToolStripMenuItem redoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem playAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripLabel currentSoundFile_toolStripLabel;
+        private System.Windows.Forms.TabControl soundSources_TabControl;
     }
 }
 

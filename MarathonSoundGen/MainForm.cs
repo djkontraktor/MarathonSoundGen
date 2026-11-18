@@ -6,17 +6,21 @@ namespace MarathonSoundGen
 {
     public partial class MainForm : Form
     {
+
+        #region Form Lifecycle
+
         public MainForm()
         {
             InitializeComponent();
-
             this.FormClosing += MainForm_FormClosing;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Dispose all
+            SoundEngine.DisposeAllSources();
         }
+
+        #endregion
 
         #region Control Callbacks
 
