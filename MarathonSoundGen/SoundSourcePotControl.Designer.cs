@@ -1,6 +1,6 @@
 ﻿namespace MarathonSoundGen
 {
-    partial class SoundSourceControl
+    partial class SoundSourcePotControl
     {
         /// <summary> 
         /// Required designer variable.

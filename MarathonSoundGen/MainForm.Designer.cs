@@ -41,6 +41,8 @@
             this.playAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.currentSoundFile_toolStripLabel = new System.Windows.Forms.ToolStripLabel();
             this.soundSources_TabControl = new System.Windows.Forms.TabControl();
+            this.addSoundSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.removeCurrentSoundSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -122,7 +124,9 @@
             // 
             this.soundScape_dropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.soundScape_dropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.playAllToolStripMenuItem});
+            this.playAllToolStripMenuItem,
+            this.addSoundSourceToolStripMenuItem,
+            this.removeCurrentSoundSourceToolStripMenuItem});
             this.soundScape_dropDownButton.Image = ((System.Drawing.Image)(resources.GetObject("soundScape_dropDownButton.Image")));
             this.soundScape_dropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.soundScape_dropDownButton.Name = "soundScape_dropDownButton";
@@ -153,6 +157,22 @@
             this.soundSources_TabControl.Size = new System.Drawing.Size(800, 425);
             this.soundSources_TabControl.TabIndex = 2;
             // 
+            // addSoundSourceToolStripMenuItem
+            // 
+            this.addSoundSourceToolStripMenuItem.Name = "addSoundSourceToolStripMenuItem";
+            this.addSoundSourceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.addSoundSourceToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.addSoundSourceToolStripMenuItem.Text = "Add Sound Source";
+            this.addSoundSourceToolStripMenuItem.Click += new System.EventHandler(this.AddSoundSourceClick);
+            // 
+            // removeCurrentSoundSourceToolStripMenuItem
+            // 
+            this.removeCurrentSoundSourceToolStripMenuItem.Name = "removeCurrentSoundSourceToolStripMenuItem";
+            this.removeCurrentSoundSourceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
+            this.removeCurrentSoundSourceToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.removeCurrentSoundSourceToolStripMenuItem.Text = "Remove Current Sound Source";
+            this.removeCurrentSoundSourceToolStripMenuItem.Click += new System.EventHandler(this.RemoveSoundSourceClick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -182,6 +202,8 @@
         private System.Windows.Forms.ToolStripMenuItem playAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripLabel currentSoundFile_toolStripLabel;
         private System.Windows.Forms.TabControl soundSources_TabControl;
+        private System.Windows.Forms.ToolStripMenuItem addSoundSourceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem removeCurrentSoundSourceToolStripMenuItem;
     }
 }
 

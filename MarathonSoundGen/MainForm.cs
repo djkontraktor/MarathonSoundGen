@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -6,6 +7,7 @@ namespace MarathonSoundGen
 {
     public partial class MainForm : Form
     {
+        private Dictionary<SoundSource, TabPage> mSoundSourcePages = new Dictionary<SoundSource, TabPage>();
 
         #region Form Lifecycle
 
@@ -33,6 +35,16 @@ namespace MarathonSoundGen
                 SoundEngine.LoadSoundsFile(filePath);
                 currentSoundFile_toolStripLabel.Text = filePath;
             }
+        }
+
+        private void AddSoundSourceClick(object sender, EventArgs e)
+        {
+            mSoundSourcePages.Add(new AmbientSoundSource(), new TabPage());
+        }
+
+        private void RemoveSoundSourceClick(object sender, EventArgs e)
+        {
+
         }
 
         #endregion
@@ -72,6 +84,5 @@ namespace MarathonSoundGen
             }
         }
 
-        
     }
 }

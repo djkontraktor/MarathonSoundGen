@@ -2,9 +2,9 @@
 
 namespace MarathonSoundGen
 {
-    public partial class SoundSourceControl : UserControl
+    public partial class SoundSourcePotControl : UserControl
     {
-        public SoundSourceControl()
+        public SoundSourcePotControl()
         {
             InitializeComponent();
         }

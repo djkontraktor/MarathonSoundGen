@@ -95,11 +95,17 @@
     <Compile Include="AmbientSoundSource.cs" />
     <Compile Include="PlaybackVoice.cs" />
     <Compile Include="PlaybackParameters.cs" />
-    <Compile Include="SoundSourceControl.cs">
+    <Compile Include="SoundSourcePotControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SoundSourceControl.Designer.cs">
-      <DependentUpon>SoundSourceControl.cs</DependentUpon>
+    <Compile Include="SoundSourcePotControl.Designer.cs">
+      <DependentUpon>SoundSourcePotControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SoundSourceSampleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SoundSourceSampleControl.Designer.cs">
+      <DependentUpon>SoundSourceSampleControl.cs</DependentUpon>
     </Compile>
     <Compile Include="VolumePanSampleProvider.cs" />
     <Compile Include="SoundEngine.cs" />
@@ -126,8 +132,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="SoundSourceControl.resx">
-      <DependentUpon>SoundSourceControl.cs</DependentUpon>
+    <EmbeddedResource Include="SoundSourcePotControl.resx">
+      <DependentUpon>SoundSourcePotControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SoundSourceSampleControl.resx">
+      <DependentUpon>SoundSourceSampleControl.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
