@@ -47,9 +47,9 @@
             this.pan_Label = new System.Windows.Forms.Label();
             this.deltaPan_Label = new System.Windows.Forms.Label();
             this.deltaPanOffset_Label = new System.Windows.Forms.Label();
-            this.pot1 = new NAudio.Gui.Pot();
-            this.pot2 = new NAudio.Gui.Pot();
-            this.pot3 = new NAudio.Gui.Pot();
+            this.pan_Pot = new NAudio.Gui.Pot();
+            this.deltaPan_Pot = new NAudio.Gui.Pot();
+            this.deltaPanOffset_Pot = new NAudio.Gui.Pot();
             this.pitch_TableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.deltaPitchOffset_Pot = new NAudio.Gui.Pot();
             this.deltaPitch_Pot = new NAudio.Gui.Pot();
@@ -150,7 +150,7 @@
             this.frequency_Pot.Size = new System.Drawing.Size(218, 100);
             this.frequency_Pot.TabIndex = 3;
             this.frequency_Pot.Value = 1D;
-            this.frequency_Pot.ValueChanged += new System.EventHandler(this.FrequencyChanged);
+            this.frequency_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // deltaFrequency_Pot
             // 
@@ -162,7 +162,7 @@
             this.deltaFrequency_Pot.Size = new System.Drawing.Size(218, 100);
             this.deltaFrequency_Pot.TabIndex = 4;
             this.deltaFrequency_Pot.Value = 0D;
-            this.deltaFrequency_Pot.ValueChanged += new System.EventHandler(this.DeltaFrequencyChanged);
+            this.deltaFrequency_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // deltaFrequencyOffset_Pot
             // 
@@ -174,7 +174,7 @@
             this.deltaFrequencyOffset_Pot.Size = new System.Drawing.Size(218, 100);
             this.deltaFrequencyOffset_Pot.TabIndex = 5;
             this.deltaFrequencyOffset_Pot.Value = 0D;
-            this.deltaFrequencyOffset_Pot.ValueChanged += new System.EventHandler(this.DeltaFrequencyOffsetChanged);
+            this.deltaFrequencyOffset_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // volume_TableLayoutPanel
             // 
@@ -243,7 +243,7 @@
             this.volume_Pot.Size = new System.Drawing.Size(218, 97);
             this.volume_Pot.TabIndex = 3;
             this.volume_Pot.Value = 1D;
-            this.volume_Pot.ValueChanged += new System.EventHandler(this.VolumeChanged);
+            this.volume_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // deltaVolume_Pot
             // 
@@ -255,7 +255,7 @@
             this.deltaVolume_Pot.Size = new System.Drawing.Size(218, 97);
             this.deltaVolume_Pot.TabIndex = 4;
             this.deltaVolume_Pot.Value = 0D;
-            this.deltaVolume_Pot.ValueChanged += new System.EventHandler(this.DeltaVolumeChanged);
+            this.deltaVolume_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // deltaVolumeOffset_Pot
             // 
@@ -267,7 +267,7 @@
             this.deltaVolumeOffset_Pot.Size = new System.Drawing.Size(218, 97);
             this.deltaVolumeOffset_Pot.TabIndex = 5;
             this.deltaVolumeOffset_Pot.Value = 0D;
-            this.deltaVolumeOffset_Pot.ValueChanged += new System.EventHandler(this.DeltaVolumeOffsetChanged);
+            this.deltaVolumeOffset_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // pan_TableLayoutPanel
             // 
@@ -278,9 +278,9 @@
             this.pan_TableLayoutPanel.Controls.Add(this.pan_Label, 0, 0);
             this.pan_TableLayoutPanel.Controls.Add(this.deltaPan_Label, 1, 0);
             this.pan_TableLayoutPanel.Controls.Add(this.deltaPanOffset_Label, 2, 0);
-            this.pan_TableLayoutPanel.Controls.Add(this.pot1, 0, 1);
-            this.pan_TableLayoutPanel.Controls.Add(this.pot2, 1, 1);
-            this.pan_TableLayoutPanel.Controls.Add(this.pot3, 2, 1);
+            this.pan_TableLayoutPanel.Controls.Add(this.pan_Pot, 0, 1);
+            this.pan_TableLayoutPanel.Controls.Add(this.deltaPan_Pot, 1, 1);
+            this.pan_TableLayoutPanel.Controls.Add(this.deltaPanOffset_Pot, 2, 1);
             this.pan_TableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pan_TableLayoutPanel.Location = new System.Drawing.Point(3, 269);
             this.pan_TableLayoutPanel.Name = "pan_TableLayoutPanel";
@@ -327,41 +327,41 @@
             this.deltaPanOffset_Label.Text = "Delta Pan Offset";
             this.deltaPanOffset_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // pot1
+            // pan_Pot
             // 
-            this.pot1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pot1.Location = new System.Drawing.Point(3, 27);
-            this.pot1.Maximum = 1D;
-            this.pot1.Minimum = -1D;
-            this.pot1.Name = "pot1";
-            this.pot1.Size = new System.Drawing.Size(218, 97);
-            this.pot1.TabIndex = 3;
-            this.pot1.Value = 0D;
-            this.pot1.ValueChanged += new System.EventHandler(this.PanChanged);
+            this.pan_Pot.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pan_Pot.Location = new System.Drawing.Point(3, 27);
+            this.pan_Pot.Maximum = 1D;
+            this.pan_Pot.Minimum = -1D;
+            this.pan_Pot.Name = "pan_Pot";
+            this.pan_Pot.Size = new System.Drawing.Size(218, 97);
+            this.pan_Pot.TabIndex = 3;
+            this.pan_Pot.Value = 0D;
+            this.pan_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
-            // pot2
+            // deltaPan_Pot
             // 
-            this.pot2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pot2.Location = new System.Drawing.Point(227, 27);
-            this.pot2.Maximum = 1D;
-            this.pot2.Minimum = -1D;
-            this.pot2.Name = "pot2";
-            this.pot2.Size = new System.Drawing.Size(218, 97);
-            this.pot2.TabIndex = 4;
-            this.pot2.Value = 0D;
-            this.pot2.ValueChanged += new System.EventHandler(this.DeltaPanChanged);
+            this.deltaPan_Pot.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deltaPan_Pot.Location = new System.Drawing.Point(227, 27);
+            this.deltaPan_Pot.Maximum = 1D;
+            this.deltaPan_Pot.Minimum = -1D;
+            this.deltaPan_Pot.Name = "deltaPan_Pot";
+            this.deltaPan_Pot.Size = new System.Drawing.Size(218, 97);
+            this.deltaPan_Pot.TabIndex = 4;
+            this.deltaPan_Pot.Value = 0D;
+            this.deltaPan_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
-            // pot3
+            // deltaPanOffset_Pot
             // 
-            this.pot3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pot3.Location = new System.Drawing.Point(451, 27);
-            this.pot3.Maximum = 1D;
-            this.pot3.Minimum = -1D;
-            this.pot3.Name = "pot3";
-            this.pot3.Size = new System.Drawing.Size(218, 97);
-            this.pot3.TabIndex = 5;
-            this.pot3.Value = 0D;
-            this.pot3.ValueChanged += new System.EventHandler(this.DeltaPanOffsetChanged);
+            this.deltaPanOffset_Pot.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.deltaPanOffset_Pot.Location = new System.Drawing.Point(451, 27);
+            this.deltaPanOffset_Pot.Maximum = 1D;
+            this.deltaPanOffset_Pot.Minimum = -1D;
+            this.deltaPanOffset_Pot.Name = "deltaPanOffset_Pot";
+            this.deltaPanOffset_Pot.Size = new System.Drawing.Size(218, 97);
+            this.deltaPanOffset_Pot.TabIndex = 5;
+            this.deltaPanOffset_Pot.Value = 0D;
+            this.deltaPanOffset_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // pitch_TableLayoutPanel
             // 
@@ -394,7 +394,7 @@
             this.deltaPitchOffset_Pot.Size = new System.Drawing.Size(218, 58);
             this.deltaPitchOffset_Pot.TabIndex = 6;
             this.deltaPitchOffset_Pot.Value = 0D;
-            this.deltaPitchOffset_Pot.ValueChanged += new System.EventHandler(this.DeltaPitchOffsetChanged);
+            this.deltaPitchOffset_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // deltaPitch_Pot
             // 
@@ -406,7 +406,7 @@
             this.deltaPitch_Pot.Size = new System.Drawing.Size(218, 58);
             this.deltaPitch_Pot.TabIndex = 5;
             this.deltaPitch_Pot.Value = 0D;
-            this.deltaPitch_Pot.ValueChanged += new System.EventHandler(this.DeltaPitchChanged);
+            this.deltaPitch_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // pitch_Pot
             // 
@@ -418,7 +418,7 @@
             this.pitch_Pot.Size = new System.Drawing.Size(218, 58);
             this.pitch_Pot.TabIndex = 4;
             this.pitch_Pot.Value = 1D;
-            this.pitch_Pot.ValueChanged += new System.EventHandler(this.PitchChanged);
+            this.pitch_Pot.ValueChanged += new System.EventHandler(this.PotChanged);
             // 
             // deltaPitchOffset_Label
             // 
@@ -456,12 +456,12 @@
             this.pitch_Label.Text = "Pitch";
             this.pitch_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // SoundSourceControl
+            // SoundSourcePotControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.master_TableLayoutPanel);
-            this.Name = "SoundSourceControl";
+            this.Name = "SoundSourcePotControl";
             this.Size = new System.Drawing.Size(678, 535);
             this.master_TableLayoutPanel.ResumeLayout(false);
             this.frequency_TableLayoutPanel.ResumeLayout(false);
@@ -490,9 +490,9 @@
         private System.Windows.Forms.Label pan_Label;
         private System.Windows.Forms.Label deltaPan_Label;
         private System.Windows.Forms.Label deltaPanOffset_Label;
-        private NAudio.Gui.Pot pot1;
-        private NAudio.Gui.Pot pot2;
-        private NAudio.Gui.Pot pot3;
+        private NAudio.Gui.Pot pan_Pot;
+        private NAudio.Gui.Pot deltaPan_Pot;
+        private NAudio.Gui.Pot deltaPanOffset_Pot;
         private System.Windows.Forms.TableLayoutPanel pitch_TableLayoutPanel;
         private System.Windows.Forms.Label pitch_Label;
         private System.Windows.Forms.Label deltaPitchOffset_Label;

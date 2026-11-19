@@ -107,6 +107,12 @@
     <Compile Include="SoundSourceSampleControl.Designer.cs">
       <DependentUpon>SoundSourceSampleControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="SoundSourceTabPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="SoundSourceTabPage.Designer.cs">
+      <DependentUpon>SoundSourceTabPage.cs</DependentUpon>
+    </Compile>
     <Compile Include="VolumePanSampleProvider.cs" />
     <Compile Include="SoundEngine.cs" />
     <Compile Include="RandomSoundSource.cs" />
@@ -137,6 +143,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SoundSourceSampleControl.resx">
       <DependentUpon>SoundSourceSampleControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SoundSourceTabPage.resx">
+      <DependentUpon>SoundSourceTabPage.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

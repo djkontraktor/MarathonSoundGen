@@ -8,12 +8,13 @@ namespace MarathonSoundGen
         #region Public Properties
 
         public static SoundScape SoundScape = new SoundScape();
+        public static M2SoundsFile SoundsFile;
 
         #endregion
 
         #region Private Properties
 
-        private static M2SoundsFile mSoundsFile;
+
         private static bool mInitialized = false;
 
         #endregion
@@ -22,7 +23,7 @@ namespace MarathonSoundGen
 
         public static void LoadSoundsFile(string filePath)
         {
-            mSoundsFile = new M2SoundsFile(filePath);
+            SoundsFile = new M2SoundsFile(filePath);
             Init();
         }
 

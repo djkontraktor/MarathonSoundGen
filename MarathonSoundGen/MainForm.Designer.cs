@@ -39,10 +39,10 @@
             this.redoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.soundScape_dropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.playAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.currentSoundFile_toolStripLabel = new System.Windows.Forms.ToolStripLabel();
-            this.soundSources_TabControl = new System.Windows.Forms.TabControl();
             this.addSoundSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeCurrentSoundSourceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.currentSoundFile_toolStripLabel = new System.Windows.Forms.ToolStripLabel();
+            this.soundSources_TabControl = new System.Windows.Forms.TabControl();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -140,6 +140,22 @@
             this.playAllToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
             this.playAllToolStripMenuItem.Text = "Play/Stop All Sound Sources";
             // 
+            // addSoundSourceToolStripMenuItem
+            // 
+            this.addSoundSourceToolStripMenuItem.Name = "addSoundSourceToolStripMenuItem";
+            this.addSoundSourceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.addSoundSourceToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.addSoundSourceToolStripMenuItem.Text = "Add Sound Source";
+            this.addSoundSourceToolStripMenuItem.Click += new System.EventHandler(this.AddSoundSourceClick);
+            // 
+            // removeCurrentSoundSourceToolStripMenuItem
+            // 
+            this.removeCurrentSoundSourceToolStripMenuItem.Name = "removeCurrentSoundSourceToolStripMenuItem";
+            this.removeCurrentSoundSourceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
+            this.removeCurrentSoundSourceToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
+            this.removeCurrentSoundSourceToolStripMenuItem.Text = "Remove Current Sound Source";
+            this.removeCurrentSoundSourceToolStripMenuItem.Click += new System.EventHandler(this.RemoveSoundSourceClick);
+            // 
             // currentSoundFile_toolStripLabel
             // 
             this.currentSoundFile_toolStripLabel.Name = "currentSoundFile_toolStripLabel";
@@ -156,22 +172,7 @@
             this.soundSources_TabControl.SelectedIndex = 0;
             this.soundSources_TabControl.Size = new System.Drawing.Size(800, 425);
             this.soundSources_TabControl.TabIndex = 2;
-            // 
-            // addSoundSourceToolStripMenuItem
-            // 
-            this.addSoundSourceToolStripMenuItem.Name = "addSoundSourceToolStripMenuItem";
-            this.addSoundSourceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.addSoundSourceToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
-            this.addSoundSourceToolStripMenuItem.Text = "Add Sound Source";
-            this.addSoundSourceToolStripMenuItem.Click += new System.EventHandler(this.AddSoundSourceClick);
-            // 
-            // removeCurrentSoundSourceToolStripMenuItem
-            // 
-            this.removeCurrentSoundSourceToolStripMenuItem.Name = "removeCurrentSoundSourceToolStripMenuItem";
-            this.removeCurrentSoundSourceToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.removeCurrentSoundSourceToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
-            this.removeCurrentSoundSourceToolStripMenuItem.Text = "Remove Current Sound Source";
-            this.removeCurrentSoundSourceToolStripMenuItem.Click += new System.EventHandler(this.RemoveSoundSourceClick);
+            this.soundSources_TabControl.TabIndexChanged += new System.EventHandler(this.TabSwitched);
             // 
             // MainForm
             // 

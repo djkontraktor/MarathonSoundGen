@@ -1,13 +1,16 @@
-﻿using System;
+﻿using MarathonFileUtils.Sounds;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace MarathonSoundGen
 {
     public partial class MainForm : Form
     {
-        private Dictionary<SoundSource, TabPage> mSoundSourcePages = new Dictionary<SoundSource, TabPage>();
+        private Dictionary<TabPage, SoundSource> mSoundSourcePages = new Dictionary<TabPage, SoundSource>();
+        private TabPage mSelectedPage;
 
         #region Form Lifecycle
 
@@ -39,15 +42,68 @@ namespace MarathonSoundGen
 
         private void AddSoundSourceClick(object sender, EventArgs e)
         {
-            mSoundSourcePages.Add(new AmbientSoundSource(), new TabPage());
+            SoundSlot firstSlot = SoundEngine.SoundsFile.SoundSlots.First();
+            SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
+            tabPage.SoundChanged += TabPageSoundChanged;
+            tabPage.PlaybackToggled += PlaybackToggled;
+            mSoundSourcePages.Add(tabPage, new AmbientSoundSource(firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0));
+            UpdateControls();
+        }
+
+        private void TabPageSoundChanged(object sender, EventArgs e)
+        {
+            SoundSourceTabPage page = sender as SoundSourceTabPage;
+            mSoundSourcePages[page].Volume = page.PotControl.Volume;
+            mSoundSourcePages[page].RandomVolume = page.PotControl.DeltaVolume;
+            mSoundSourcePages[page].RandomVolumeOffset = page.PotControl.DeltaVolumeOffset;
+            mSoundSourcePages[page].Pitch = page.PotControl.Pitch;
+            mSoundSourcePages[page].RandomPitch = page.PotControl.DeltaPitch;
+            mSoundSourcePages[page].RandomPitchOffset = page.PotControl.DeltaPitchOffset;
+            mSoundSourcePages[page].Pan = page.PotControl.Pan;
+            mSoundSourcePages[page].RandomPan = page.PotControl.DeltaPan;
+            mSoundSourcePages[page].RandomPanOffset = page.PotControl.DeltaPanOffset;
+            //mSoundSourcePages[page].Frequency = page.PotControl.Frequency;
+            //mSoundSourcePages[page].RandomFrequency = page.PotControl.DeltaFrequency;
+            //mSoundSourcePages[page].RandomFrequencyOffset = page.PotControl.DeltaFrequencyOffset;
+            mSoundSourcePages[page].SoundSlot = SoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
+        }
+
+        private void PlaybackToggled(object sender, EventArgs e)
+        {
+            SoundSourceTabPage page = sender as SoundSourceTabPage;
+
+            if (mSoundSourcePages[page].IsPlaying)
+            {
+                mSoundSourcePages[page].Stop();
+            }
+            else
+            {
+                mSoundSourcePages[page].Start();
+            }
         }
 
         private void RemoveSoundSourceClick(object sender, EventArgs e)
         {
+            mSoundSourcePages.Remove(mSelectedPage);
+            UpdateControls();
+        }
 
+        private void TabSwitched(object sender, EventArgs e)
+        {
+            mSelectedPage = this.soundSources_TabControl.SelectedTab;
         }
 
         #endregion
+
+        private void UpdateControls()
+        {
+            this.soundSources_TabControl.TabPages.Clear();
+
+            foreach (SoundSourceTabPage page in mSoundSourcePages.Keys)
+            {
+                this.soundSources_TabControl.TabPages.Add(page);
+            }
+        }
 
         private static string PromptSelectSoundFile()
         {
@@ -83,6 +139,6 @@ namespace MarathonSoundGen
                 return string.Empty;
             }
         }
-
+        
     }
 }
