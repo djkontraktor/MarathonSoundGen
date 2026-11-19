@@ -7,31 +7,45 @@ namespace MarathonSoundGen
 {
     public class MixerVoice : IDisposable
     {
-        
+
+        #region Public Properties
+
         public MemoryStream MemoryStream { get; private set; }
         public WaveFileReader WaveReader { get; private set; }
+
         public SmbPitchShiftingSampleProvider PitchProvider
         {
             get;
             private set;
         }
+
         public VolumePanSampleProvider VolumePanProvider
         {
             get;
             private set;
         }
+
         public AutoDisposeSampleProvider Provider
         {
             get;
             private set;
         }
+
         public PlaybackParameters Parameters
         {
             get;
             private set;
         }
 
+        #endregion
+
+        #region Private Properties
+
         private bool mDisposed;
+
+        #endregion
+
+        #region Constructor
 
         public MixerVoice(MemoryStream memoryStream, WaveFileReader waveReader, SmbPitchShiftingSampleProvider pitchProvider, VolumePanSampleProvider volumePanProvider, AutoDisposeSampleProvider provider, PlaybackParameters parameters)
         {
@@ -42,6 +56,10 @@ namespace MarathonSoundGen
             Provider = provider;
             Parameters = parameters;
         }
+
+        #endregion
+
+        #region Public Members
 
         public void Dispose()
         {
@@ -73,6 +91,8 @@ namespace MarathonSoundGen
                 MemoryStream = null;
             }
         }
+
+        #endregion
 
     }
 }

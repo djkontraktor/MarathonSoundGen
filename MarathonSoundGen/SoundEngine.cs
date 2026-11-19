@@ -11,7 +11,6 @@ namespace MarathonSoundGen
 
         #region Public Properties
 
-        public static SoundScape SoundScape = new SoundScape();
         public static M2SoundsFile SoundsFile;
         public static bool SoundsFileLoaded = false;
 
@@ -23,13 +22,13 @@ namespace MarathonSoundGen
             }
         }
 
-        public bool IsOutputRunning
+        public bool OutputEnabled
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
-                    return mOutputRunning;
+                    return mOutputEnabled;
                 }
             }
         }
@@ -38,9 +37,9 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
-                    return mActiveOwners.Count;
+                    return mActiveSources.Count;
                 }
             }
         }
@@ -49,11 +48,11 @@ namespace MarathonSoundGen
 
         #region Private Properties
 
-        private readonly object mSyncRoot = new object();
+        private readonly object mSync = new object();
         private readonly MixingSampleProvider mMixer;
         private readonly WaveOutEvent mOutputDevice;
-        private readonly HashSet<object> mActiveOwners = new HashSet<object>();
-        private bool mOutputRunning;
+        private readonly HashSet<object> mActiveSources = new HashSet<object>();
+        private bool mOutputEnabled;
         private bool mDisposed;
 
         #endregion
@@ -74,14 +73,13 @@ namespace MarathonSoundGen
 
             WaveFormat mixerFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 2);
 
-            mMixer = new MixingSampleProvider(mixerFormat);
-
-            /*
-             * This is the critical setting. The mixer returns silence instead
-             * of returning zero when it temporarily has no inputs. Therefore,
-             * WaveOutEvent does not interpret an empty mixer as end-of-stream.
-             */
-            mMixer.ReadFully = true;
+            mMixer = new MixingSampleProvider(mixerFormat)
+            {
+                // This is the critical setting. The mixer returns silence instead
+                // of returning zero when it temporarily has no inputs. Therefore,
+                // WaveOutEvent does not interpret an empty mixer as end-of-stream.
+                ReadFully = true,
+            };
 
             mOutputDevice = new WaveOutEvent
             {
@@ -108,16 +106,16 @@ namespace MarathonSoundGen
                     throw new ArgumentNullException(nameof(owner));
                 }
 
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
 
-                    mActiveOwners.Add(owner);
+                    mActiveSources.Add(owner);
 
-                    if (!mOutputRunning)
+                    if (!mOutputEnabled)
                     {
                         mOutputDevice.Play();
-                        mOutputRunning = true;
+                        mOutputEnabled = true;
                     }
                 }
             }
@@ -134,14 +132,14 @@ namespace MarathonSoundGen
                 return;
             }
 
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 if (mDisposed)
                 {
                     return;
                 }
 
-                mActiveOwners.Remove(owner);
+                mActiveSources.Remove(owner);
             }
         }
 
@@ -154,7 +152,7 @@ namespace MarathonSoundGen
                     throw new ArgumentNullException(nameof(input));
                 }
 
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
 
@@ -175,7 +173,7 @@ namespace MarathonSoundGen
                 return;
             }
 
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 if (mDisposed)
                 {
@@ -194,7 +192,7 @@ namespace MarathonSoundGen
 
         public void Dispose()
         {
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 if (mDisposed)
                 {
@@ -202,12 +200,12 @@ namespace MarathonSoundGen
                 }
 
                 mDisposed = true;
-                mActiveOwners.Clear();
+                mActiveSources.Clear();
 
-                if (mOutputRunning)
+                if (mOutputEnabled)
                 {
                     mOutputDevice.Stop();
-                    mOutputRunning = false;
+                    mOutputEnabled = false;
                 }
 
                 mOutputDevice.Dispose();

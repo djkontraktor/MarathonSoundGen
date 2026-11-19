@@ -7,6 +7,8 @@ namespace MarathonSoundGen
     public partial class LabeledPot : UserControl
     {
 
+        #region Public Properties
+
         public Pot Pot
         {
             get
@@ -27,11 +29,19 @@ namespace MarathonSoundGen
             }
         }
 
+        #endregion
+
+        #region Constructor
+
         public LabeledPot()
         {
             InitializeComponent();
             this.HandleCreated += LabeledPot_HandleCreated;
         }
+
+        #endregion
+
+        #region Control Callbacks
 
         private void LabeledPot_HandleCreated(object sender, EventArgs e)
         {
@@ -63,6 +73,8 @@ namespace MarathonSoundGen
                 value_TextBox.Text = oldVal.ToString();
             }
         }
+
+        #endregion
 
     }
 }

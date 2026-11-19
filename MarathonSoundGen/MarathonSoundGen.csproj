@@ -97,7 +97,6 @@
     <Compile Include="OwnedSampleProvider.cs" />
     <Compile Include="ContinuousRandomSampleProvider.cs" />
     <Compile Include="MixerVoice.cs" />
-    <Compile Include="PlaybackVoice.cs" />
     <Compile Include="PlaybackParameters.cs" />
     <Compile Include="SoundSourcePotControl.cs">
       <SubType>UserControl</SubType>
@@ -127,7 +126,6 @@
     <Compile Include="SoundEngine.cs" />
     <Compile Include="RandomSoundSource.cs" />
     <Compile Include="SoundSource.cs" />
-    <Compile Include="SoundScape.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

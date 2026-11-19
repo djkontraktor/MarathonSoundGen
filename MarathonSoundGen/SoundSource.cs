@@ -13,13 +13,13 @@ namespace MarathonSoundGen
 
         #region Public Properties
 
-        public SoundSlot SoundSlot
+        public SoundSlot CurrentSound
         {
             get
             {
                 lock (mSyncRoot)
                 {
-                    return mSoundSlot;
+                    return mCurrentSound;
                 }
             }
             set
@@ -27,7 +27,7 @@ namespace MarathonSoundGen
                 lock (mSyncRoot)
                 {
                     ThrowIfDisposed();
-                    mSoundSlot = value;
+                    mCurrentSound = value;
                 }
             }
         }
@@ -212,13 +212,13 @@ namespace MarathonSoundGen
             }
         }
 
-        public bool IsStarted
+        public bool Playing
         {
             get
             {
                 lock (mSyncRoot)
                 {
-                    return mStarted && !mDisposed;
+                    return mPlaying && !mDisposed;
                 }
             }
         }
@@ -231,16 +231,7 @@ namespace MarathonSoundGen
 
         protected const double mMinimumPitch = 0.5;
         protected const double mMaximumPitch = 2.0;
-        protected bool IsDisposed
-        {
-            get
-            {
-                lock (mSyncRoot)
-                {
-                    return mDisposed;
-                }
-            }
-        }
+
         protected SoundEngine SoundEngine
         {
             get
@@ -248,9 +239,10 @@ namespace MarathonSoundGen
                 return mSoundEngine;
             }
         }
+
         private readonly object mSyncRoot = new object();
         private readonly Random mRng = new Random();
-        private SoundSlot mSoundSlot;
+        private SoundSlot mCurrentSound;
         private SoundEngine mSoundEngine;
         private MixerVoice mActiveVoice;
         private double mVolume;
@@ -263,7 +255,7 @@ namespace MarathonSoundGen
         private double mRandomPan;
         private double mRandomPanOffset;
         private bool mDisposed;
-        private bool mStarted;
+        private bool mPlaying;
 
         #endregion
 
@@ -289,7 +281,7 @@ namespace MarathonSoundGen
             ValidateFinite(randomPanOffset, nameof(randomPanOffset));
 
             mSoundEngine = soundEngine;
-            mSoundSlot = soundSlot;
+            mCurrentSound = soundSlot;
 
             mVolume = ClampFinite(volume, 0.0, 1.0, nameof(volume));
             mRandomVolume = Math.Max(0.0, randomVolume);
@@ -314,25 +306,25 @@ namespace MarathonSoundGen
             {
                 ThrowIfDisposed();
 
-                if (mStarted)
+                if (mPlaying)
                 {
                     return;
                 }
 
                 ValidateSoundSlot();
-                mStarted = true;
+                mPlaying = true;
             }
 
             try
             {
                 mSoundEngine.ActivateSource(this);
-                PlayRandomSound();
+                PlaySoundSingle();
             }
             catch
             {
                 lock (mSyncRoot)
                 {
-                    mStarted = false;
+                    mPlaying = false;
                 }
 
                 mSoundEngine.DeactivateSource(this);
@@ -349,7 +341,7 @@ namespace MarathonSoundGen
             {
                 ThrowIfDisposed();
 
-                mStarted = false;
+                mPlaying = false;
 
                 voice = mActiveVoice;
                 mActiveVoice = null;
@@ -364,40 +356,8 @@ namespace MarathonSoundGen
             mSoundEngine.DeactivateSource(this);
         }
 
-        //protected virtual void Dispose(bool disposing)
-        //{
-        //    if (!disposing)
-        //    {
-        //        return;
-        //    }
-
-        //    MixerVoice voice;
-
-        //    lock (mSyncRoot)
-        //    {
-        //        if (mDisposed)
-        //        {
-        //            return;
-        //        }
-
-        //        mStarted = false;
-        //        mDisposed = true;
-
-        //        voice = mActiveVoice;
-        //        mActiveVoice = null;
-        //    }
-
-        //    if (voice != null)
-        //    {
-        //        voice.Output.PlaybackStopped -= Voice_PlaybackStopped;
-
-        //        voice.StopAndDispose();
-        //    }
-        //}
-
         public virtual void Dispose()
         {
-            //Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -415,25 +375,16 @@ namespace MarathonSoundGen
                 ThrowIfDisposed();
                 ValidateSoundSlot();
 
-                selectedSound =
-                    GetRandomElement(mSoundSlot.Samples);
+                selectedSound = GetRandomElement(mCurrentSound.Samples);
 
-                /*
-                 * A new randomized volume, pitch, and pan are generated every time
-                 * this method is called.
-                 */
-                parameters =
-                    CreateRandomPlaybackParameters();
+                // A new randomized volume, pitch, and pan are generated every time this method is called.
+                parameters = CreateRandomPlaybackParameters();
             }
 
-            return CreateOwnedProvider(
-                selectedSound,
-                parameters);
+            return CreateOwnedProvider(selectedSound, parameters);
         }
 
-        private OwnedSampleProvider CreateOwnedProvider(
-    SoundPermutation sound,
-    PlaybackParameters parameters)
+        private OwnedSampleProvider CreateOwnedProvider(SoundPermutation sound, PlaybackParameters parameters)
         {
             if (sound == null)
             {
@@ -455,46 +406,32 @@ namespace MarathonSoundGen
 
             try
             {
-                memoryStream =
-                    MarathonFileUtils.Sounds.Utils.CreateWaveStream(
-                        sound.Data,
-                        sound.Header);
+                memoryStream = MarathonFileUtils.Sounds.Utils.CreateWaveStream(sound.Data, sound.Header);
 
                 if (memoryStream == null)
                 {
-                    throw new InvalidOperationException(
-                        "CreateWaveStream returned null.");
+                    throw new InvalidOperationException("CreateWaveStream returned null.");
                 }
 
                 memoryStream.Position = 0;
 
                 waveReader = new WaveFileReader(memoryStream);
+                ISampleProvider sampleProvider = waveReader.ToSampleProvider();
 
-                ISampleProvider sampleProvider =
-                    waveReader.ToSampleProvider();
+                SmbPitchShiftingSampleProvider pitchProvider = new SmbPitchShiftingSampleProvider(sampleProvider)
+                {
+                    PitchFactor = (float)parameters.Pitch,
+                };
 
-                SmbPitchShiftingSampleProvider pitchProvider =
-                    new SmbPitchShiftingSampleProvider(sampleProvider);
+                VolumePanSampleProvider volumePanProvider = new VolumePanSampleProvider(pitchProvider)
+                {
+                    Volume = (float)parameters.Volume,
+                    Pan = (float)parameters.Pan,
+                };
 
-                pitchProvider.PitchFactor =
-                    (float)parameters.Pitch;
+                ISampleProvider engineFormatProvider = ConvertToEngineFormat(volumePanProvider);
 
-                VolumePanSampleProvider volumePanProvider =
-                    new VolumePanSampleProvider(pitchProvider);
-
-                volumePanProvider.Volume =
-                    (float)parameters.Volume;
-
-                volumePanProvider.Pan =
-                    (float)parameters.Pan;
-
-                ISampleProvider engineFormatProvider =
-                    ConvertToEngineFormat(volumePanProvider);
-
-                return new OwnedSampleProvider(
-                    engineFormatProvider,
-                    waveReader,
-                    memoryStream);
+                return new OwnedSampleProvider(engineFormatProvider, waveReader, memoryStream);
             }
             catch
             {
@@ -502,9 +439,7 @@ namespace MarathonSoundGen
                 {
                     waveReader.Dispose();
 
-                    /*
-                     * WaveFileReader normally disposes its underlying stream.
-                     */
+                    // WaveFileReader normally disposes its underlying stream.
                     memoryStream = null;
                 }
 
@@ -517,7 +452,7 @@ namespace MarathonSoundGen
             }
         }
 
-        protected void PlayRandomSound()
+        protected void PlaySoundSingle()
         {
             MixerVoice previousVoice;
             MixerVoice newVoice;
@@ -526,26 +461,19 @@ namespace MarathonSoundGen
             {
                 ThrowIfDisposed();
 
-                if (!mStarted)
+                if (!mPlaying)
                 {
                     return;
                 }
 
                 ValidateSoundSlot();
 
-                SoundPermutation selectedSound =
-                    GetRandomElement(mSoundSlot.Samples);
+                SoundPermutation selectedSound = GetRandomElement(mCurrentSound.Samples);
+                PlaybackParameters parameters = CreateRandomPlaybackParameters();
 
-                PlaybackParameters parameters =
-                    CreateRandomPlaybackParameters();
-
-                /*
-                 * Construct the replacement before removing the current input.
-                 * This minimizes the replacement interval.
-                 */
-                newVoice = CreateVoice(
-                    selectedSound,
-                    parameters);
+                // Construct the replacement before removing the current input.
+                // This minimizes the replacement interval.
+                newVoice = CreateVoice(selectedSound, parameters);
 
                 previousVoice = mActiveVoice;
                 mActiveVoice = newVoice;
@@ -583,16 +511,10 @@ namespace MarathonSoundGen
                 return;
             }
 
-            /*
-             * AutoDisposeSampleProvider calls this from inside the audio mixer's
-             * Read() operation. Do not dispose the current provider or add a new
-             * mixer input until that Read() has returned.
-             */
-            ThreadPool.QueueUserWorkItem(
-                delegate
-                {
-                    FinishVoiceOutsideMixerRead(finishedVoice);
-                });
+            // AutoDisposeSampleProvider calls this from inside the audio mixer's
+            // Read() operation. Do not dispose the current provider or add a new
+            // mixer input until that Read() has returned.
+            ThreadPool.QueueUserWorkItem(delegate { FinishVoiceOutsideMixerRead(finishedVoice); } );
         }
 
         /// <summary>
@@ -689,10 +611,7 @@ namespace MarathonSoundGen
 
             try
             {
-                memoryStream =
-                    MarathonFileUtils.Sounds.Utils.CreateWaveStream(
-                        sound.Data,
-                        sound.Header);
+                memoryStream = MarathonFileUtils.Sounds.Utils.CreateWaveStream(sound.Data, sound.Header);
 
                 if (memoryStream == null)
                 {
@@ -702,45 +621,26 @@ namespace MarathonSoundGen
                 memoryStream.Position = 0;
 
                 waveReader = new WaveFileReader(memoryStream);
+                ISampleProvider sourceProvider = waveReader.ToSampleProvider();
 
-                ISampleProvider sourceProvider =
-                    waveReader.ToSampleProvider();
+                SmbPitchShiftingSampleProvider pitchProvider = new SmbPitchShiftingSampleProvider(sourceProvider)
+                {
+                    PitchFactor = (float)parameters.Pitch,
+                };
 
-                SmbPitchShiftingSampleProvider pitchProvider =
-                    new SmbPitchShiftingSampleProvider(sourceProvider);
+                VolumePanSampleProvider volumePanProvider = new VolumePanSampleProvider(pitchProvider)
+                {
+                    Volume = (float)parameters.Volume,
+                    Pan = (float)parameters.Pan,
+                };
 
-                pitchProvider.PitchFactor =
-                    (float)parameters.Pitch;
-
-                VolumePanSampleProvider volumePanProvider =
-                    new VolumePanSampleProvider(pitchProvider);
-
-                volumePanProvider.Volume =
-                    (float)parameters.Volume;
-
-                volumePanProvider.Pan =
-                    (float)parameters.Pan;
-
-                ISampleProvider engineFormatProvider =
-                    ConvertToEngineFormat(volumePanProvider);
+                ISampleProvider engineFormatProvider = ConvertToEngineFormat(volumePanProvider);
 
                 MixerVoice voice = null;
 
-                AutoDisposeSampleProvider endingProvider =
-                    new AutoDisposeSampleProvider(
-                        engineFormatProvider,
-                        delegate
-                        {
-                            VoiceFinished(voice);
-                        });
+                AutoDisposeSampleProvider endingProvider = new AutoDisposeSampleProvider(engineFormatProvider, delegate { VoiceFinished(voice); } );
 
-                voice = new MixerVoice(
-                    memoryStream,
-                    waveReader,
-                    pitchProvider,
-                    volumePanProvider,
-                    endingProvider,
-                    parameters);
+                voice = new MixerVoice(memoryStream, waveReader, pitchProvider, volumePanProvider, endingProvider, parameters);
 
                 return voice;
             }
@@ -759,28 +659,6 @@ namespace MarathonSoundGen
                 throw;
             }
         }
-
-        //private void Voice_PlaybackStopped(object sender, StoppedEventArgs e)
-        //{
-        //    MixerVoice finishedVoice;
-
-        //    lock (mSyncRoot)
-        //    {
-        //        if (mActiveVoice == null || !ReferenceEquals(mActiveVoice.Output, sender))
-        //        {
-        //            return;
-        //        }
-
-        //        finishedVoice = mActiveVoice;
-        //        mActiveVoice = null;
-        //    }
-
-        //    finishedVoice.Output.PlaybackStopped -= Voice_PlaybackStopped;
-
-        //    finishedVoice.Dispose();
-
-        //    OnVoiceFinished(e.Exception);
-        //}
 
         private void UpdateActiveVoice()
         {
@@ -835,12 +713,12 @@ namespace MarathonSoundGen
 
         private void ValidateSoundSlot()
         {
-            if (mSoundSlot == null)
+            if (mCurrentSound == null)
             {
-                throw new InvalidOperationException("SoundSlot has not been assigned.");
+                throw new InvalidOperationException("A sound slot has not been assigned.");
             }
 
-            if (mSoundSlot.Samples == null || mSoundSlot.Samples.Count == 0)
+            if (mCurrentSound.Samples == null || mCurrentSound.Samples.Count == 0)
             {
                 throw new InvalidOperationException("The SoundSlot does not contain any samples.");
             }
@@ -860,8 +738,7 @@ namespace MarathonSoundGen
             }
         }
 
-        private ISampleProvider ConvertToEngineFormat(
-    ISampleProvider source)
+        private ISampleProvider ConvertToEngineFormat(ISampleProvider source)
         {
             if (source == null)
             {
@@ -870,43 +747,33 @@ namespace MarathonSoundGen
 
             ISampleProvider converted = source;
 
-            /*
-             * VolumePanSampleProvider should already output stereo, but retain this
-             * validation in case the provider chain changes later.
-             */
+            // VolumePanSampleProvider should already output stereo, but retain this
+            // validation in case the provider chain changes later.
             if (converted.WaveFormat.Channels == 1)
             {
-                converted =
-                    new MonoToStereoSampleProvider(converted);
+                converted = new MonoToStereoSampleProvider(converted);
             }
             else if (converted.WaveFormat.Channels != 2)
             {
-                throw new NotSupportedException(
-                    "Only mono and stereo audio is supported.");
+                throw new NotSupportedException("Only mono and stereo audio is supported.");
             }
 
-            if (converted.WaveFormat.SampleRate !=
-                mSoundEngine.WaveFormat.SampleRate)
+            if (converted.WaveFormat.SampleRate != mSoundEngine.WaveFormat.SampleRate)
             {
-                converted = new WdlResamplingSampleProvider(
-                    converted,
-                    mSoundEngine.WaveFormat.SampleRate);
+                converted = new WdlResamplingSampleProvider(converted, mSoundEngine.WaveFormat.SampleRate);
             }
 
             return converted;
         }
 
-        private void FinishVoiceOutsideMixerRead(
-    MixerVoice finishedVoice)
+        private void FinishVoiceOutsideMixerRead(MixerVoice finishedVoice)
         {
             bool continuePlayback;
 
             lock (mSyncRoot)
             {
-                /*
-                 * If another sound was already assigned, this completion belongs
-                 * to an obsolete voice and must not start another sound.
-                 */
+                // If another sound was already assigned, this completion belongs
+                // to an obsolete voice and must not start another sound.
                 if (!ReferenceEquals(mActiveVoice, finishedVoice))
                 {
                     finishedVoice.Dispose();
@@ -915,15 +782,11 @@ namespace MarathonSoundGen
 
                 mActiveVoice = null;
 
-                continuePlayback =
-                    mStarted &&
-                    !mDisposed;
+                continuePlayback = mPlaying && !mDisposed;
             }
 
-            /*
-             * The mixer has already removed this provider after it returned zero.
-             * It is now safe to dispose the WAV reader and MemoryStream.
-             */
+            // The mixer has already removed this provider after it returned zero.
+            // It is now safe to dispose the WAV reader and MemoryStream.
             finishedVoice.Dispose();
 
             if (!continuePlayback)
@@ -951,13 +814,13 @@ namespace MarathonSoundGen
             {
                 ThrowIfDisposed();
 
-                if (mStarted)
+                if (mPlaying)
                 {
                     return false;
                 }
 
                 ValidateSoundSlot();
-                mStarted = true;
+                mPlaying = true;
 
                 return true;
             }
@@ -967,7 +830,7 @@ namespace MarathonSoundGen
         {
             lock (mSyncRoot)
             {
-                mStarted = false;
+                mPlaying = false;
             }
         }
 

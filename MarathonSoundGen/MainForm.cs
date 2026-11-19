@@ -95,21 +95,21 @@ namespace MarathonSoundGen
             source.RandomPan = page.PotControl.DeltaPan;
             source.RandomPanOffset = page.PotControl.DeltaPanOffset;
 
-            if (source is RandomSoundSource rand)
+            if (source is RandomSoundSource randSource)
             {
-                rand.Frequency_Hz = page.PotControl.Frequency;
-                rand.RandomFrequency_Hz = page.PotControl.DeltaFrequency;
-                rand.RandomFrequencyOffset_Hz = page.PotControl.DeltaFrequencyOffset;
+                randSource.Frequency_Hz = page.PotControl.Frequency;
+                randSource.RandomFrequency_Hz = page.PotControl.DeltaFrequency;
+                randSource.RandomFrequencyOffset_Hz = page.PotControl.DeltaFrequencyOffset;
             }
 
             try
             {
-                source.SoundSlot = SoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
+                source.CurrentSound = SoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
             }
             catch (Exception ex)
             {
 
-            }           
+            }
         }
 
         private void PlaybackToggled(object sender, EventArgs e)
@@ -118,7 +118,7 @@ namespace MarathonSoundGen
             {
                 SoundSourceTabPage page = sender as SoundSourceTabPage;
 
-                if (mSoundSourcePages[page].IsStarted)
+                if (mSoundSourcePages[page].Playing)
                 {
                     mSoundSourcePages[page].Stop();
                 }

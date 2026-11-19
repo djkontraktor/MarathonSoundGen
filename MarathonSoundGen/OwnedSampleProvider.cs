@@ -1,22 +1,27 @@
 ﻿using NAudio.Wave;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MarathonSoundGen
 {
     public sealed class OwnedSampleProvider : IDisposable
     {
-        private readonly IDisposable[] mOwnedResources;
-        private bool mDisposed;
+
+        #region Public Properties
 
         public ISampleProvider Provider { get; private set; }
 
-        public OwnedSampleProvider(
-            ISampleProvider provider,
-            params IDisposable[] ownedResources)
+        #endregion
+
+        #region Private Properties
+
+        private readonly IDisposable[] mOwnedResources;
+        private bool mDisposed;
+
+        #endregion
+
+        #region Constructor
+
+        public OwnedSampleProvider(ISampleProvider provider, params IDisposable[] ownedResources)
         {
             if (provider == null)
             {
@@ -25,9 +30,12 @@ namespace MarathonSoundGen
 
             Provider = provider;
 
-            mOwnedResources =
-                ownedResources ?? new IDisposable[0];
+            mOwnedResources = ownedResources ?? new IDisposable[0];
         }
+
+        #endregion
+
+        #region Public Members
 
         public void Dispose()
         {
@@ -43,9 +51,7 @@ namespace MarathonSoundGen
              * Dispose in the supplied order. Pass WaveFileReader before its
              * underlying MemoryStream when constructing this object.
              */
-            for (int index = 0;
-                 index < mOwnedResources.Length;
-                 index++)
+            for (int index = 0; index < mOwnedResources.Length; index++)
             {
                 IDisposable resource = mOwnedResources[index];
 
@@ -55,5 +61,8 @@ namespace MarathonSoundGen
                 }
             }
         }
+
+        #endregion
+
     }
 }

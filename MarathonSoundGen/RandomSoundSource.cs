@@ -123,10 +123,8 @@ namespace MarathonSoundGen
 
                 CancellationToken token = mSchedulerCancellation.Token;
 
-                /*
-                 * Set the base started state and play the first trigger
-                 * immediately.
-                 */
+                // Set the base started state and play the first trigger
+                // immediately.
                 base.Start();
 
                 mSchedulerTask = Task.Run(() => RunSchedulerAsync(token), token);
@@ -152,11 +150,9 @@ namespace MarathonSoundGen
                 cancellation.Cancel();
             }
 
-            /*
-             * Do not synchronously wait on schedulerTask here. Stop() may be
-             * called from a UI thread, and waiting is unnecessary because the
-             * cancellation token ends the scheduler promptly.
-             */
+            // Do not synchronously wait on schedulerTask here. Stop() may be
+            // called from a UI thread, and waiting is unnecessary because the
+            // cancellation token ends the scheduler promptly.
             base.Stop();
 
             if (cancellation != null)
@@ -164,29 +160,6 @@ namespace MarathonSoundGen
                 cancellation.Dispose();
             }
         }
-
-        //protected override void Dispose(bool disposing)
-        //{
-        //    if (disposing)
-        //    {
-        //        CancellationTokenSource cancellation;
-
-        //        lock (mFrequencySyncRoot)
-        //        {
-        //            cancellation = mSchedulerCancellation;
-        //            mSchedulerCancellation = null;
-        //            mSchedulerTask = null;
-        //        }
-
-        //        if (cancellation != null)
-        //        {
-        //            cancellation.Cancel();
-        //            cancellation.Dispose();
-        //        }
-        //    }
-
-        //    base.Dispose(disposing);
-        //}
 
         #endregion
 
@@ -196,23 +169,21 @@ namespace MarathonSoundGen
         {
             try
             {
-                while (!cancellationToken.IsCancellationRequested && IsStarted)
+                while (!cancellationToken.IsCancellationRequested && Playing)
                 {
                     TimeSpan delay = GetNextTriggerDelay();
 
                     await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
 
-                    if (cancellationToken.IsCancellationRequested || !IsStarted)
+                    if (cancellationToken.IsCancellationRequested || !Playing)
                     {
                         break;
                     }
 
-                    /*
-                     * This starts a new voice without stopping any voice that is
-                     * already running. Random volume, pitch, and pan are selected
-                     * independently for this trigger.
-                     */
-                    PlayRandomSound();
+                    // This starts a new voice without stopping any voice that is
+                    // already running. Random volume, pitch, and pan are selected
+                    // independently for this trigger.
+                    PlaySoundSingle();
                 }
             }
             catch (OperationCanceledException)

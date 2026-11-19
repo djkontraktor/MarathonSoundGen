@@ -1,43 +1,32 @@
 ﻿using MarathonFileUtils.Sounds;
-using System;
 
 namespace MarathonSoundGen
 {
     public class AmbientSoundSource : SoundSource
     {
-        private readonly object mAmbientSyncRoot = new object();
+
+        #region Private Properties
+
+        private readonly object mSyncRoot = new object();
         private ContinuousRandomSampleProvider mAmbientProvider;
 
-        public AmbientSoundSource(
-        SoundEngine soundEngine,
-        SoundSlot soundSlot,
-        double volume,
-        double randomVolume,
-        double randomVolumeOffset,
-        double pitch,
-        double randomPitch,
-        double randomPitchOffset,
-        double pan,
-        double randomPan,
-        double randomPanOffset)
-        : base(
-            soundEngine,
-            soundSlot,
-            volume,
-            randomVolume,
-            randomVolumeOffset,
-            pitch,
-            randomPitch,
-            randomPitchOffset,
-            pan,
-            randomPan,
-            randomPanOffset)
+        #endregion
+
+        #region Constructor
+
+        public AmbientSoundSource(SoundEngine soundEngine, SoundSlot soundSlot, double volume, double randomVolume, double randomVolumeOffset, double pitch, double randomPitch, double randomPitchOffset, double pan, double randomPan, double randomPanOffset)
+        : base(soundEngine, soundSlot, volume, randomVolume, randomVolumeOffset, pitch, randomPitch, randomPitchOffset, pan, randomPan, randomPanOffset)
         {
+
         }
+
+        #endregion
+
+        #region Public Members
 
         public override void Start()
         {
-            lock (mAmbientSyncRoot)
+            lock (mSyncRoot)
             {
                 if (mAmbientProvider != null)
                 {
@@ -49,26 +38,19 @@ namespace MarathonSoundGen
                     return;
                 }
 
-                ContinuousRandomSampleProvider provider =
-                    new ContinuousRandomSampleProvider(
-                        SoundEngine.WaveFormat,
-                        CreateRandomOwnedProvider);
+                ContinuousRandomSampleProvider provider = new ContinuousRandomSampleProvider(SoundEngine.WaveFormat, CreateRandomOwnedProvider);
 
                 try
                 {
                     SoundEngine.ActivateSource(this);
                     SoundEngine.AddInput(provider);
-
                     mAmbientProvider = provider;
                 }
                 catch
                 {
                     SetStopped();
-
                     SoundEngine.RemoveInput(provider);
-                    SoundEngine.DeactivateSource(
-                        this);
-
+                    SoundEngine.DeactivateSource(this);
                     provider.Dispose();
                     throw;
                 }
@@ -79,11 +61,10 @@ namespace MarathonSoundGen
         {
             ContinuousRandomSampleProvider provider;
 
-            lock (mAmbientSyncRoot)
+            lock (mSyncRoot)
             {
                 provider = mAmbientProvider;
                 mAmbientProvider = null;
-
                 SetStopped();
             }
 
@@ -94,16 +75,16 @@ namespace MarathonSoundGen
                 provider.Dispose();
             }
 
-            SoundEngine.DeactivateSource(
-                this);
+            SoundEngine.DeactivateSource(this);
         }
 
         public override void Dispose()
         {
             Stop();
-
             base.Dispose();
         }
+
+        #endregion
 
     }
 }

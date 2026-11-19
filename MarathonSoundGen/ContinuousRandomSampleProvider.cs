@@ -1,9 +1,5 @@
 ﻿using NAudio.Wave;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MarathonSoundGen
 {
@@ -13,13 +9,8 @@ namespace MarathonSoundGen
     /// </summary>
     public sealed class ContinuousRandomSampleProvider : ISampleProvider, IDisposable
     {
-        private readonly object mSyncRoot = new object();
-        private readonly WaveFormat mWaveFormat;
-        private readonly Func<OwnedSampleProvider> mProviderFactory;
 
-        private OwnedSampleProvider mCurrentProvider;
-        private bool mStopped;
-        private bool mDisposed;
+        #region Public Properties
 
         public WaveFormat WaveFormat
         {
@@ -29,9 +20,22 @@ namespace MarathonSoundGen
             }
         }
 
-        public ContinuousRandomSampleProvider(
-            WaveFormat waveFormat,
-            Func<OwnedSampleProvider> providerFactory)
+        #endregion
+
+        #region Private Properties
+
+        private readonly object mSync = new object();
+        private readonly WaveFormat mWaveFormat;
+        private readonly Func<OwnedSampleProvider> mProviderFactory;
+        private OwnedSampleProvider mCurrentProvider;
+        private bool mStopped;
+        private bool mDisposed;
+
+        #endregion
+
+        #region Constructor
+
+        public ContinuousRandomSampleProvider(WaveFormat waveFormat, Func<OwnedSampleProvider> providerFactory)
         {
             if (waveFormat == null)
             {
@@ -46,6 +50,10 @@ namespace MarathonSoundGen
             mWaveFormat = waveFormat;
             mProviderFactory = providerFactory;
         }
+
+        #endregion
+
+        #region Public Members
 
         public int Read(float[] buffer, int offset, int count)
         {
@@ -64,7 +72,7 @@ namespace MarathonSoundGen
                 throw new ArgumentOutOfRangeException(nameof(count));
             }
 
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 if (mDisposed || mStopped)
                 {
@@ -121,7 +129,7 @@ namespace MarathonSoundGen
 
         public void Stop()
         {
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 if (mStopped)
                 {
@@ -133,37 +141,46 @@ namespace MarathonSoundGen
             }
         }
 
+        public void Dispose()
+        {
+            lock (mSync)
+            {
+                if (mDisposed)
+                {
+                    return;
+                }
+
+                mStopped = true;
+                mDisposed = true;
+
+                DisposeCurrentProvider();
+            }
+        }
+
+        #endregion
+
+        #region Private Members
+
         private OwnedSampleProvider CreateNextProvider()
         {
             OwnedSampleProvider provider = mProviderFactory();
 
             if (provider == null)
             {
-                throw new InvalidOperationException(
-                    "The ambient provider factory returned null.");
+                throw new InvalidOperationException("The ambient provider factory returned null.");
             }
 
             if (provider.Provider == null)
             {
                 provider.Dispose();
-
-                throw new InvalidOperationException(
-                    "The ambient provider factory returned a null provider.");
+                throw new InvalidOperationException("The ambient provider factory returned a null provider.");
             }
 
-            if (!FormatsMatch(
-                provider.Provider.WaveFormat,
-                mWaveFormat))
+            if (!FormatsMatch(provider.Provider.WaveFormat, mWaveFormat))
             {
-                WaveFormat actualFormat =
-                    provider.Provider.WaveFormat;
-
+                WaveFormat actualFormat = provider.Provider.WaveFormat;
                 provider.Dispose();
-
-                throw new InvalidOperationException(
-                    "The ambient provider format does not match the mixer. " +
-                    "Expected " + mWaveFormat +
-                    ", but received " + actualFormat + ".");
+                throw new InvalidOperationException("The ambient provider format does not match the mixer. Expected " + mWaveFormat + ", but received " + actualFormat + ".");
             }
 
             return provider;
@@ -180,9 +197,7 @@ namespace MarathonSoundGen
             }
         }
 
-        private static bool FormatsMatch(
-            WaveFormat first,
-            WaveFormat second)
+        private static bool FormatsMatch(WaveFormat first, WaveFormat second)
         {
             return first.SampleRate == second.SampleRate &&
                    first.Channels == second.Channels &&
@@ -190,20 +205,7 @@ namespace MarathonSoundGen
                    first.BitsPerSample == second.BitsPerSample;
         }
 
-        public void Dispose()
-        {
-            lock (mSyncRoot)
-            {
-                if (mDisposed)
-                {
-                    return;
-                }
+        #endregion
 
-                mStopped = true;
-                mDisposed = true;
-
-                DisposeCurrentProvider();
-            }
-        }
     }
 }

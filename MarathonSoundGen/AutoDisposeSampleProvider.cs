@@ -6,10 +6,8 @@ namespace MarathonSoundGen
 {
     public class AutoDisposeSampleProvider : ISampleProvider
     {
-        private readonly ISampleProvider mSource;
-        private readonly Action mFinishedCallback;
 
-        private int mFinished;
+        #region Public Properties
 
         public WaveFormat WaveFormat
         {
@@ -19,9 +17,19 @@ namespace MarathonSoundGen
             }
         }
 
-        public AutoDisposeSampleProvider(
-            ISampleProvider source,
-            Action finishedCallback)
+        #endregion
+
+        #region Private Properties
+
+        private readonly ISampleProvider mSource;
+        private readonly Action mFinishedCallback;
+        private int mFinished;
+
+        #endregion
+
+        #region Constructor
+
+        public AutoDisposeSampleProvider(ISampleProvider source, Action finishedCallback)
         {
             if (source == null)
             {
@@ -31,6 +39,10 @@ namespace MarathonSoundGen
             mSource = source;
             mFinishedCallback = finishedCallback;
         }
+
+        #endregion
+
+        #region Public Members
 
         public int Read(float[] buffer, int offset, int count)
         {
@@ -56,6 +68,8 @@ namespace MarathonSoundGen
                 mFinishedCallback();
             }
         }
+
+        #endregion
 
     }
 }
