@@ -84,19 +84,25 @@ namespace MarathonSoundGen
         private void TabPageSoundChanged(object sender, EventArgs e)
         {
             SoundSourceTabPage page = sender as SoundSourceTabPage;
-            mSoundSourcePages[page].Volume = page.PotControl.Volume;
-            mSoundSourcePages[page].RandomVolume = page.PotControl.DeltaVolume;
-            mSoundSourcePages[page].RandomVolumeOffset = page.PotControl.DeltaVolumeOffset;
-            mSoundSourcePages[page].Pitch = page.PotControl.Pitch;
-            mSoundSourcePages[page].RandomPitch = page.PotControl.DeltaPitch;
-            mSoundSourcePages[page].RandomPitchOffset = page.PotControl.DeltaPitchOffset;
-            mSoundSourcePages[page].Pan = page.PotControl.Pan;
-            mSoundSourcePages[page].RandomPan = page.PotControl.DeltaPan;
-            mSoundSourcePages[page].RandomPanOffset = page.PotControl.DeltaPanOffset;
-            //mSoundSourcePages[page].Frequency = page.PotControl.Frequency;
-            //mSoundSourcePages[page].RandomFrequency = page.PotControl.DeltaFrequency;
-            //mSoundSourcePages[page].RandomFrequencyOffset = page.PotControl.DeltaFrequencyOffset;
-            mSoundSourcePages[page].SoundSlot = SoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
+            SoundSource source = mSoundSourcePages[page];
+            source.Volume = page.PotControl.Volume;
+            source.RandomVolume = page.PotControl.DeltaVolume;
+            source.RandomVolumeOffset = page.PotControl.DeltaVolumeOffset;
+            source.Pitch = page.PotControl.Pitch;
+            source.RandomPitch = page.PotControl.DeltaPitch;
+            source.RandomPitchOffset = page.PotControl.DeltaPitchOffset;
+            source.Pan = page.PotControl.Pan;
+            source.RandomPan = page.PotControl.DeltaPan;
+            source.RandomPanOffset = page.PotControl.DeltaPanOffset;
+
+            if (source is RandomSoundSource rand)
+            {
+                rand.Frequency_Hz = page.PotControl.Frequency;
+                rand.RandomFrequency_Hz = page.PotControl.DeltaFrequency;
+                rand.RandomFrequencyOffset_Hz = page.PotControl.DeltaFrequencyOffset;
+            }
+
+            source.SoundSlot = SoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
         }
 
         private void PlaybackToggled(object sender, EventArgs e)
