@@ -102,7 +102,14 @@ namespace MarathonSoundGen
                 rand.RandomFrequencyOffset_Hz = page.PotControl.DeltaFrequencyOffset;
             }
 
-            source.SoundSlot = SoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
+            try
+            {
+                source.SoundSlot = SoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
+            }
+            catch (Exception ex)
+            {
+
+            }           
         }
 
         private void PlaybackToggled(object sender, EventArgs e)

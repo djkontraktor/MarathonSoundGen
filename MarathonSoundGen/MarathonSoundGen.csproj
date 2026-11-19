@@ -117,6 +117,12 @@
     <Compile Include="SoundSourceTabPage.Designer.cs">
       <DependentUpon>SoundSourceTabPage.cs</DependentUpon>
     </Compile>
+    <Compile Include="LabeledPot.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="LabeledPot.Designer.cs">
+      <DependentUpon>LabeledPot.cs</DependentUpon>
+    </Compile>
     <Compile Include="VolumePanSampleProvider.cs" />
     <Compile Include="SoundEngine.cs" />
     <Compile Include="RandomSoundSource.cs" />
@@ -130,6 +136,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="LabeledPot.resx">
+      <DependentUpon>LabeledPot.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
