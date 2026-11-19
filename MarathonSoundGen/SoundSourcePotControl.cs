@@ -5,6 +5,9 @@ namespace MarathonSoundGen
 {
     public partial class SoundSourcePotControl : UserControl
     {
+
+        #region Public Properties
+
         public event EventHandler SoundPropertyChanged;
         public double Volume { get; private set; }
         public double DeltaVolume { get; private set; }
@@ -19,17 +22,27 @@ namespace MarathonSoundGen
         public double DeltaFrequency { get; private set; }
         public double DeltaFrequencyOffset { get; private set; }
 
+        #endregion
+
+        #region Constructor
+
         public SoundSourcePotControl()
         {
             InitializeComponent();
             InitializeValues();
         }
 
+        #endregion
+
+        #region Control Callbacks
+
         private void PotChanged(object sender, EventArgs e)
         {
             UpdateValues();
             HandleSoundPropertyChanged();
         }
+
+        #endregion
 
         #region Private Properties
 

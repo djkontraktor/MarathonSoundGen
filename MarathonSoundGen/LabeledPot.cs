@@ -63,5 +63,6 @@ namespace MarathonSoundGen
                 value_TextBox.Text = oldVal.ToString();
             }
         }
+
     }
 }

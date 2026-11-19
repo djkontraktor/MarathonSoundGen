@@ -9,8 +9,8 @@ namespace MarathonSoundGen
 
         #region Public Properties
 
-        public SoundSourcePotControl PotControl = new SoundSourcePotControl();
-        public SoundSourceSampleControl SampleControl = new SoundSourceSampleControl();
+        public SoundSourcePotControl PotControl = new SoundSourcePotControl { Dock  = DockStyle.Fill };
+        public SoundSourceSampleControl SampleControl = new SoundSourceSampleControl { Dock = DockStyle.Fill };
         public EventHandler SoundChanged;
         public EventHandler PlaybackToggled;
 
@@ -18,11 +18,14 @@ namespace MarathonSoundGen
 
         #region Private Properties
 
-        private FlowLayoutPanel mControlPanel = new FlowLayoutPanel
+        private SplitContainer master_SplitContainer = new SplitContainer
         {
             Dock = DockStyle.Fill,
+            Orientation = Orientation.Horizontal,
+            SplitterDistance = 30,
+            IsSplitterFixed = true,
+            FixedPanel = FixedPanel.Panel1
         };
-        private Button mPlayPauseButton = new Button { Text = "Play/Pause" };
 
         #endregion
 
@@ -32,15 +35,14 @@ namespace MarathonSoundGen
         {
             InitializeComponent();
 
-            this.Controls.Add(mControlPanel);
-            mControlPanel.Controls.Add(PotControl);
-            mControlPanel.Controls.Add(SampleControl);
-            mControlPanel.Controls.Add(mPlayPauseButton);
+            this.Controls.Add(master_SplitContainer);
+            master_SplitContainer.Panel1.Controls.Add(SampleControl);
+            master_SplitContainer.Panel2.Controls.Add(PotControl);
 
             SampleControl.PopulateSamples(M2SoundIds.IDs);
             SampleControl.SoundSourceChanged += SampleControl_SoundSourceChanged;
             PotControl.SoundPropertyChanged += PotControl_SoundPropertyChanged;
-            mPlayPauseButton.Click += PlayPauseButton_Click;
+            SampleControl.PlayStopButton.Click += PlayPauseButton_Click;
         }
 
         #endregion

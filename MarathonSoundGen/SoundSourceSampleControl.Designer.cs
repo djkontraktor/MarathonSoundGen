@@ -28,98 +28,70 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.master_TableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.slotName_Label = new System.Windows.Forms.Label();
             this.soundName_ComboBox = new System.Windows.Forms.ComboBox();
-            this.properties_Label = new System.Windows.Forms.Label();
-            this.properties_CheckedListBox = new System.Windows.Forms.CheckedListBox();
-            this.master_TableLayoutPanel.SuspendLayout();
+            this.flowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.soundSource_Label = new System.Windows.Forms.Label();
+            this.playStop_Button = new System.Windows.Forms.Button();
+            this.flowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // master_TableLayoutPanel
-            // 
-            this.master_TableLayoutPanel.ColumnCount = 2;
-            this.master_TableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.master_TableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.master_TableLayoutPanel.Controls.Add(this.slotName_Label, 0, 0);
-            this.master_TableLayoutPanel.Controls.Add(this.soundName_ComboBox, 0, 1);
-            this.master_TableLayoutPanel.Controls.Add(this.properties_Label, 1, 0);
-            this.master_TableLayoutPanel.Controls.Add(this.properties_CheckedListBox, 1, 1);
-            this.master_TableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.master_TableLayoutPanel.Location = new System.Drawing.Point(0, 0);
-            this.master_TableLayoutPanel.Name = "master_TableLayoutPanel";
-            this.master_TableLayoutPanel.RowCount = 2;
-            this.master_TableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.master_TableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.master_TableLayoutPanel.Size = new System.Drawing.Size(651, 57);
-            this.master_TableLayoutPanel.TabIndex = 0;
-            // 
-            // slotName_Label
-            // 
-            this.slotName_Label.AutoSize = true;
-            this.slotName_Label.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.slotName_Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.slotName_Label.Location = new System.Drawing.Point(3, 0);
-            this.slotName_Label.Name = "slotName_Label";
-            this.slotName_Label.Size = new System.Drawing.Size(319, 24);
-            this.slotName_Label.TabIndex = 0;
-            this.slotName_Label.Text = "Sound Name";
-            this.slotName_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // soundName_ComboBox
             // 
-            this.soundName_ComboBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.soundName_ComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.soundName_ComboBox.FormattingEnabled = true;
-            this.soundName_ComboBox.Location = new System.Drawing.Point(3, 27);
+            this.soundName_ComboBox.Location = new System.Drawing.Point(81, 3);
             this.soundName_ComboBox.Name = "soundName_ComboBox";
-            this.soundName_ComboBox.Size = new System.Drawing.Size(319, 21);
+            this.soundName_ComboBox.Size = new System.Drawing.Size(227, 21);
             this.soundName_ComboBox.TabIndex = 1;
             // 
-            // properties_Label
+            // flowLayoutPanel
             // 
-            this.properties_Label.AutoSize = true;
-            this.properties_Label.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.properties_Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.properties_Label.Location = new System.Drawing.Point(328, 0);
-            this.properties_Label.Name = "properties_Label";
-            this.properties_Label.Size = new System.Drawing.Size(320, 24);
-            this.properties_Label.TabIndex = 2;
-            this.properties_Label.Text = "Sound Properties";
-            this.properties_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.flowLayoutPanel.Controls.Add(this.soundSource_Label);
+            this.flowLayoutPanel.Controls.Add(this.soundName_ComboBox);
+            this.flowLayoutPanel.Controls.Add(this.playStop_Button);
+            this.flowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel.Location = new System.Drawing.Point(0, 0);
+            this.flowLayoutPanel.Name = "flowLayoutPanel";
+            this.flowLayoutPanel.Size = new System.Drawing.Size(398, 57);
+            this.flowLayoutPanel.TabIndex = 1;
             // 
-            // properties_CheckedListBox
+            // soundSource_Label
             // 
-            this.properties_CheckedListBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.properties_CheckedListBox.FormattingEnabled = true;
-            this.properties_CheckedListBox.Items.AddRange(new object[] {
-            "Is Random"});
-            this.properties_CheckedListBox.Location = new System.Drawing.Point(328, 27);
-            this.properties_CheckedListBox.MultiColumn = true;
-            this.properties_CheckedListBox.Name = "properties_CheckedListBox";
-            this.properties_CheckedListBox.Size = new System.Drawing.Size(320, 96);
-            this.properties_CheckedListBox.TabIndex = 3;
-            this.properties_CheckedListBox.ThreeDCheckBoxes = true;
+            this.soundSource_Label.AutoSize = true;
+            this.soundSource_Label.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.soundSource_Label.Location = new System.Drawing.Point(3, 0);
+            this.soundSource_Label.Name = "soundSource_Label";
+            this.soundSource_Label.Size = new System.Drawing.Size(72, 29);
+            this.soundSource_Label.TabIndex = 2;
+            this.soundSource_Label.Text = "Sound Name:";
+            this.soundSource_Label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // playStop_Button
+            // 
+            this.playStop_Button.Location = new System.Drawing.Point(314, 3);
+            this.playStop_Button.Name = "playStop_Button";
+            this.playStop_Button.Size = new System.Drawing.Size(75, 23);
+            this.playStop_Button.TabIndex = 3;
+            this.playStop_Button.Text = "Play/Stop";
+            this.playStop_Button.UseVisualStyleBackColor = true;
             // 
             // SoundSourceSampleControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.master_TableLayoutPanel);
+            this.Controls.Add(this.flowLayoutPanel);
             this.Name = "SoundSourceSampleControl";
-            this.Size = new System.Drawing.Size(651, 57);
-            this.master_TableLayoutPanel.ResumeLayout(false);
-            this.master_TableLayoutPanel.PerformLayout();
+            this.Size = new System.Drawing.Size(398, 57);
+            this.flowLayoutPanel.ResumeLayout(false);
+            this.flowLayoutPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TableLayoutPanel master_TableLayoutPanel;
-        private System.Windows.Forms.Label slotName_Label;
         private System.Windows.Forms.ComboBox soundName_ComboBox;
-        private System.Windows.Forms.Label properties_Label;
-        private System.Windows.Forms.CheckedListBox properties_CheckedListBox;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel;
+        private System.Windows.Forms.Label soundSource_Label;
+        private System.Windows.Forms.Button playStop_Button;
     }
 }
