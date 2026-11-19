@@ -93,9 +93,9 @@ namespace MarathonSoundGen
 
         #region Constructor
 
-        public RandomSoundSource(SoundSlot soundSlot, double volume, double randomVolume, double randomVolumeOffset, double pitch, double randomPitch, double randomPitchOffset,
+        public RandomSoundSource(SoundEngine soundEngine, SoundSlot soundSlot, double volume, double randomVolume, double randomVolumeOffset, double pitch, double randomPitch, double randomPitchOffset,
             double pan, double randomPan, double randomPanOffset, double frequency_Hz, double randomFrequency_Hz, double randomFrequencyOffset_Hz)
-        : base(soundSlot, volume, randomVolume, randomVolumeOffset, pitch, randomPitch, randomPitchOffset, pan, randomPan, randomPanOffset)
+        : base(soundEngine, soundSlot, volume, randomVolume, randomVolumeOffset, pitch, randomPitch, randomPitchOffset, pan, randomPan, randomPanOffset)
         {
             ValidatePositiveFinite(frequency_Hz, nameof(frequency_Hz));
             ValidateFinite(randomFrequency_Hz, nameof(randomFrequency_Hz));
@@ -165,28 +165,28 @@ namespace MarathonSoundGen
             }
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                CancellationTokenSource cancellation;
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        CancellationTokenSource cancellation;
 
-                lock (mFrequencySyncRoot)
-                {
-                    cancellation = mSchedulerCancellation;
-                    mSchedulerCancellation = null;
-                    mSchedulerTask = null;
-                }
+        //        lock (mFrequencySyncRoot)
+        //        {
+        //            cancellation = mSchedulerCancellation;
+        //            mSchedulerCancellation = null;
+        //            mSchedulerTask = null;
+        //        }
 
-                if (cancellation != null)
-                {
-                    cancellation.Cancel();
-                    cancellation.Dispose();
-                }
-            }
+        //        if (cancellation != null)
+        //        {
+        //            cancellation.Cancel();
+        //            cancellation.Dispose();
+        //        }
+        //    }
 
-            base.Dispose(disposing);
-        }
+        //    base.Dispose(disposing);
+        //}
 
         #endregion
 

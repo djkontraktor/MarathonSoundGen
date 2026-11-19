@@ -1,8 +1,12 @@
 ﻿using MarathonFileUtils.Sounds;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
+using System;
+using System.Collections.Generic;
 
 namespace MarathonSoundGen
 {
-    public static class SoundEngine
+    public class SoundEngine : IDisposable
     {
 
         #region Public Properties
@@ -11,15 +15,176 @@ namespace MarathonSoundGen
         public static M2SoundsFile SoundsFile;
         public static bool SoundsFileLoaded = false;
 
+        public WaveFormat WaveFormat
+        {
+            get
+            {
+                return mMixer.WaveFormat;
+            }
+        }
+
+        public bool IsOutputRunning
+        {
+            get
+            {
+                lock (mSyncRoot)
+                {
+                    return mOutputRunning;
+                }
+            }
+        }
+
+        public int ActiveSourceCount
+        {
+            get
+            {
+                lock (mSyncRoot)
+                {
+                    return mActiveOwners.Count;
+                }
+            }
+        }
+
         #endregion
 
         #region Private Properties
 
+        private readonly object mSyncRoot = new object();
+        private readonly MixingSampleProvider mMixer;
+        private readonly WaveOutEvent mOutputDevice;
+        private readonly HashSet<object> mActiveOwners = new HashSet<object>();
+        private bool mOutputRunning;
+        private bool mDisposed;
 
+        #endregion
+
+        #region Constructor
+
+        public SoundEngine(int sampleRate = 44100, int desiredLatency_ms = 100)
+        {
+            if (sampleRate <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sampleRate));
+            }
+
+            if (desiredLatency_ms <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(desiredLatency_ms));
+            }
+
+            WaveFormat mixerFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, 2);
+
+            mMixer = new MixingSampleProvider(mixerFormat);
+
+            /*
+             * This is the critical setting. The mixer returns silence instead
+             * of returning zero when it temporarily has no inputs. Therefore,
+             * WaveOutEvent does not interpret an empty mixer as end-of-stream.
+             */
+            mMixer.ReadFully = true;
+
+            mOutputDevice = new WaveOutEvent
+            {
+                DesiredLatency = desiredLatency_ms
+            };
+
+            mOutputDevice.Init(mMixer);
+        }
 
         #endregion
 
         #region Public Members
+
+        /// <summary>
+        /// Registers a SoundSource as active. The first active source starts
+        /// the persistent output device.
+        /// </summary>
+        public void ActivateSource(object owner)
+        {
+            if (SoundsFileLoaded)
+            {
+                if (owner == null)
+                {
+                    throw new ArgumentNullException(nameof(owner));
+                }
+
+                lock (mSyncRoot)
+                {
+                    ThrowIfDisposed();
+
+                    mActiveOwners.Add(owner);
+
+                    if (!mOutputRunning)
+                    {
+                        mOutputDevice.Play();
+                        mOutputRunning = true;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Marks a SoundSource as inactive. When no sources remain, the output
+        /// can either stop or continue playing silence, depending on the argument.
+        /// </summary>
+        public void DeactivateSource(object owner)
+        {
+            if (owner == null)
+            {
+                return;
+            }
+
+            lock (mSyncRoot)
+            {
+                if (mDisposed)
+                {
+                    return;
+                }
+
+                mActiveOwners.Remove(owner);
+            }
+        }
+
+        public void AddInput(ISampleProvider input)
+        {
+            if (SoundsFileLoaded)
+            {
+                if (input == null)
+                {
+                    throw new ArgumentNullException(nameof(input));
+                }
+
+                lock (mSyncRoot)
+                {
+                    ThrowIfDisposed();
+
+                    if (!WaveFormatsMatch(input.WaveFormat, mMixer.WaveFormat))
+                    {
+                        throw new ArgumentException("The input format does not match the mixer format. Expected " + mMixer.WaveFormat + ", but received " + input.WaveFormat + ".", nameof(input));
+                    }
+
+                    mMixer.AddMixerInput(input);
+                }
+            }
+        }
+
+        public void RemoveInput(ISampleProvider input)
+        {
+            if (input == null)
+            {
+                return;
+            }
+
+            lock (mSyncRoot)
+            {
+                if (mDisposed)
+                {
+                    return;
+                }
+
+                mMixer.RemoveMixerInput(input);
+            }
+        }
 
         public static void LoadSoundsFile(string filePath)
         {
@@ -27,53 +192,49 @@ namespace MarathonSoundGen
             SoundsFileLoaded = true;
         }
 
-        public static void StartAllSources()
+        public void Dispose()
         {
-            if (SoundsFileLoaded)
+            lock (mSyncRoot)
             {
-                foreach (SoundSource source in SoundScape.Sources)
+                if (mDisposed)
                 {
-                    source.Start();
+                    return;
                 }
-            }            
-        }
 
-        public static void StopAllSources()
-        {
-            if (SoundsFileLoaded)
-            {
-                foreach (SoundSource source in SoundScape.Sources)
+                mDisposed = true;
+                mActiveOwners.Clear();
+
+                if (mOutputRunning)
                 {
-                    source.Stop();
+                    mOutputDevice.Stop();
+                    mOutputRunning = false;
                 }
-            }
-        }
 
-        public static void DisposeAllSources()
-        {
-            foreach (SoundSource source in SoundScape.Sources)
-            {
-                source.Dispose();
+                mOutputDevice.Dispose();
             }
 
-            SoundsFileLoaded = false;
-        }
-
-        public static void AddAmbientSoundSource(AmbientSoundSource source)
-        {
-            SoundScape.Sources.Add(source);
-        }
-
-        public static void RemoveAmbientSoundSource(AmbientSoundSource source)
-        {
-            SoundScape.Sources.Remove(source);
+            GC.SuppressFinalize(this);
         }
 
         #endregion
 
         #region Private Members
 
+        private static bool WaveFormatsMatch(WaveFormat first, WaveFormat second)
+        {
+            return first.SampleRate == second.SampleRate &&
+                   first.Channels == second.Channels &&
+                   first.Encoding == second.Encoding &&
+                   first.BitsPerSample == second.BitsPerSample;
+        }
 
+        private void ThrowIfDisposed()
+        {
+            if (mDisposed)
+            {
+                throw new ObjectDisposedException(nameof(SoundEngine));
+            }
+        }
 
         #endregion
 

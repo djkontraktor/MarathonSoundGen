@@ -12,6 +12,7 @@ namespace MarathonSoundGen
 
         #region Private Properties
 
+        private readonly SoundEngine mSoundEngine;
         private Dictionary<TabPage, SoundSource> mSoundSourcePages = new Dictionary<TabPage, SoundSource>();
         private TabPage mSelectedPage;
 
@@ -23,11 +24,12 @@ namespace MarathonSoundGen
         {
             InitializeComponent();
             this.FormClosing += MainForm_FormClosing;
+            mSoundEngine = new SoundEngine(44100, 50);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            SoundEngine.DisposeAllSources();
+            mSoundEngine.Dispose();
         }
 
         #endregion
@@ -53,7 +55,7 @@ namespace MarathonSoundGen
                 SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
                 tabPage.SoundChanged += TabPageSoundChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
-                mSoundSourcePages.Add(tabPage, new AmbientSoundSource(firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0));
+                mSoundSourcePages.Add(tabPage, new AmbientSoundSource(mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0));
                 UpdateControls();
             }
             else
@@ -86,7 +88,7 @@ namespace MarathonSoundGen
             {
                 SoundSourceTabPage page = sender as SoundSourceTabPage;
 
-                if (mSoundSourcePages[page].IsPlaying)
+                if (mSoundSourcePages[page].IsStarted)
                 {
                     mSoundSourcePages[page].Stop();
                 }

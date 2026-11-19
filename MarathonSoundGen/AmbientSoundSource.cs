@@ -5,37 +5,104 @@ namespace MarathonSoundGen
 {
     public class AmbientSoundSource : SoundSource
     {
-        public AmbientSoundSource(SoundSlot soundId, double volume, double randomVolume, double randomVolumeOffset, double pitch, double randomPitch, double randomPitchOffset, double pan, double randomPan, double randomPanOffset) :
-            base(soundId, volume, randomVolume, randomVolumeOffset, pitch, randomPitch, randomPitchOffset, pan, randomPan, randomPanOffset)
-        {
+        private readonly object mAmbientSyncRoot = new object();
+        private ContinuousRandomSampleProvider mAmbientProvider;
 
+        public AmbientSoundSource(
+        SoundEngine soundEngine,
+        SoundSlot soundSlot,
+        double volume,
+        double randomVolume,
+        double randomVolumeOffset,
+        double pitch,
+        double randomPitch,
+        double randomPitchOffset,
+        double pan,
+        double randomPan,
+        double randomPanOffset)
+        : base(
+            soundEngine,
+            soundSlot,
+            volume,
+            randomVolume,
+            randomVolumeOffset,
+            pitch,
+            randomPitch,
+            randomPitchOffset,
+            pan,
+            randomPan,
+            randomPanOffset)
+        {
         }
 
-        protected override void OnVoiceFinished(Exception exception)
+        public override void Start()
         {
-            base.OnVoiceFinished(exception);
+            lock (mAmbientSyncRoot)
+            {
+                if (mAmbientProvider != null)
+                {
+                    return;
+                }
 
-            if (!IsStarted)
+                if (!TrySetStarted())
+                {
+                    return;
+                }
+
+                ContinuousRandomSampleProvider provider =
+                    new ContinuousRandomSampleProvider(
+                        SoundEngine.WaveFormat,
+                        CreateRandomOwnedProvider);
+
+                try
+                {
+                    SoundEngine.ActivateSource(this);
+                    SoundEngine.AddInput(provider);
+
+                    mAmbientProvider = provider;
+                }
+                catch
+                {
+                    SetStopped();
+
+                    SoundEngine.RemoveInput(provider);
+                    SoundEngine.DeactivateSource(
+                        this);
+
+                    provider.Dispose();
+                    throw;
+                }
+            }
+        }
+
+        public override void Stop()
+        {
+            ContinuousRandomSampleProvider provider;
+
+            lock (mAmbientSyncRoot)
             {
-                return;
+                provider = mAmbientProvider;
+                mAmbientProvider = null;
+
+                SetStopped();
             }
 
-            /*
-             * Start the next permutation directly from the completion event.
-             * Each call recalculates volume, pitch, and pan randomization.
-             */
-            try
+            if (provider != null)
             {
-                PlayRandomSound();
+                provider.Stop();
+                SoundEngine.RemoveInput(provider);
+                provider.Dispose();
             }
-            catch (ObjectDisposedException)
-            {
-                // Disposal raced with natural playback completion.
-            }
-            catch (Exception playbackException)
-            {
-                OnPlaybackError(playbackException);
-            }
+
+            SoundEngine.DeactivateSource(
+                this);
+        }
+
+        public override void Dispose()
+        {
+            Stop();
+
+            base.Dispose();
         }
 
     }

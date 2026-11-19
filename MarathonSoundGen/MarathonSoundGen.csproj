@@ -93,6 +93,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AmbientSoundSource.cs" />
+    <Compile Include="AutoDisposeSampleProvider.cs" />
+    <Compile Include="OwnedSampleProvider.cs" />
+    <Compile Include="ContinuousRandomSampleProvider.cs" />
+    <Compile Include="MixerVoice.cs" />
     <Compile Include="PlaybackVoice.cs" />
     <Compile Include="PlaybackParameters.cs" />
     <Compile Include="SoundSourcePotControl.cs">
