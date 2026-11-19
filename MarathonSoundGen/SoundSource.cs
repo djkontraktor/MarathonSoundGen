@@ -22,7 +22,16 @@ namespace MarathonSoundGen
             }
             set
             {
-                mSourceType = value;
+                if (Playing)
+                {
+                    Stop();
+                    mSourceType = value;
+                    Start();
+                }
+                else
+                {
+                    mSourceType = value;
+                }
             }
         }
 
@@ -311,15 +320,6 @@ namespace MarathonSoundGen
         private ContinuousRandomSampleProvider mAmbientProvider;
         private const double mMinimumPitch = 0.5;
         private const double mMaximumPitch = 2.0;
-
-        private SoundEngine SoundEngine
-        {
-            get
-            {
-                return mSoundEngine;
-            }
-        }
-
         private SoundSourceType mSourceType;
         private readonly object mSync = new object();
         private readonly Random mRng = new Random();
@@ -413,19 +413,19 @@ namespace MarathonSoundGen
                         return;
                     }
 
-                    ContinuousRandomSampleProvider provider = new ContinuousRandomSampleProvider(SoundEngine.WaveFormat, CreateRandomOwnedProvider);
+                    ContinuousRandomSampleProvider provider = new ContinuousRandomSampleProvider(mSoundEngine.WaveFormat, CreateRandomOwnedProvider);
 
                     try
                     {
-                        SoundEngine.ActivateSource(this);
-                        SoundEngine.AddInput(provider);
+                        mSoundEngine.ActivateSource(this);
+                        mSoundEngine.AddInput(provider);
                         mAmbientProvider = provider;
                     }
                     catch
                     {
                         SetStopped();
-                        SoundEngine.RemoveInput(provider);
-                        SoundEngine.DeactivateSource(this);
+                        mSoundEngine.RemoveInput(provider);
+                        mSoundEngine.DeactivateSource(this);
                         provider.Dispose();
                         throw;
                     }
@@ -446,7 +446,35 @@ namespace MarathonSoundGen
 
                     // Set the base started state and play the first trigger
                     // immediately.
-                    StartBase();
+                    lock (mSync)
+                    {
+                        ThrowIfDisposed();
+
+                        if (mPlaying)
+                        {
+                            return;
+                        }
+
+                        ValidateSoundSlot();
+                        mPlaying = true;
+                    }
+
+                    try
+                    {
+                        mSoundEngine.ActivateSource(this);
+                        PlaySoundSingle();
+                    }
+                    catch
+                    {
+                        lock (mSync)
+                        {
+                            mPlaying = false;
+                        }
+
+                        mSoundEngine.DeactivateSource(this);
+
+                        throw;
+                    }
 
                     mSchedulerTask = Task.Run(() => RunSchedulerAsync(token), token);
                 }
@@ -469,11 +497,11 @@ namespace MarathonSoundGen
                 if (provider != null)
                 {
                     provider.Stop();
-                    SoundEngine.RemoveInput(provider);
+                    mSoundEngine.RemoveInput(provider);
                     provider.Dispose();
                 }
 
-                SoundEngine.DeactivateSource(this);
+                mSoundEngine.DeactivateSource(this);
             }
             else
             {
@@ -497,69 +525,31 @@ namespace MarathonSoundGen
                 // Do not synchronously wait on schedulerTask here. Stop() may be
                 // called from a UI thread, and waiting is unnecessary because the
                 // cancellation token ends the scheduler promptly.
-                StopBase();
+                MixerVoice voice;
+
+                lock (mSync)
+                {
+                    ThrowIfDisposed();
+
+                    mPlaying = false;
+
+                    voice = mActiveVoice;
+                    mActiveVoice = null;
+                }
+
+                if (voice != null)
+                {
+                    mSoundEngine.RemoveInput(voice.Provider);
+                    voice.Dispose();
+                }
+
+                mSoundEngine.DeactivateSource(this);
 
                 if (cancellation != null)
                 {
                     cancellation.Dispose();
                 }
             }
-        }
-
-        private void StartBase()
-        {
-            lock (mSync)
-            {
-                ThrowIfDisposed();
-
-                if (mPlaying)
-                {
-                    return;
-                }
-
-                ValidateSoundSlot();
-                mPlaying = true;
-            }
-
-            try
-            {
-                mSoundEngine.ActivateSource(this);
-                PlaySoundSingle();
-            }
-            catch
-            {
-                lock (mSync)
-                {
-                    mPlaying = false;
-                }
-
-                mSoundEngine.DeactivateSource(this);
-
-                throw;
-            }
-        }
-
-        private void StopBase()
-        {
-            MixerVoice voice;
-
-            lock (mSync)
-            {
-                ThrowIfDisposed();
-
-                mPlaying = false;
-
-                voice = mActiveVoice;
-                mActiveVoice = null;
-            }
-
-            if (voice != null)
-            {
-                mSoundEngine.RemoveInput(voice.Provider);
-                voice.Dispose();
-            }
-
-            mSoundEngine.DeactivateSource(this);
         }
 
         public virtual void Dispose()
