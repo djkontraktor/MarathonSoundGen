@@ -47,7 +47,7 @@ namespace MarathonSoundGen
             }
         }
 
-        private void AddSoundSourceClick(object sender, EventArgs e)
+        private void AddAmbientSoundSourceClick(object sender, EventArgs e)
         {
             if (SoundEngine.SoundsFileLoaded)
             {
@@ -56,6 +56,23 @@ namespace MarathonSoundGen
                 tabPage.SoundChanged += TabPageSoundChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
                 mSoundSourcePages.Add(tabPage, new AmbientSoundSource(mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0));
+                UpdateControls();
+            }
+            else
+            {
+                ShowLoadSoundsFileErrorDialog();
+            }
+        }
+
+        private void AddRandomSoundSourceClick(object sender, EventArgs e)
+        {
+            if (SoundEngine.SoundsFileLoaded)
+            {
+                SoundSlot firstSlot = SoundEngine.SoundsFile.SoundSlots.First();
+                SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
+                tabPage.SoundChanged += TabPageSoundChanged;
+                tabPage.PlaybackToggled += PlaybackToggled;
+                mSoundSourcePages.Add(tabPage, new RandomSoundSource(mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
                 UpdateControls();
             }
             else
