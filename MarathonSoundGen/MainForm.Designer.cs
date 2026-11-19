@@ -182,7 +182,8 @@
             this.Controls.Add(this.soundSources_TabControl);
             this.Controls.Add(this.toolStrip);
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Marathon Sounds Generator v0.1";
             this.toolStrip.ResumeLayout(false);
             this.toolStrip.PerformLayout();
             this.ResumeLayout(false);
