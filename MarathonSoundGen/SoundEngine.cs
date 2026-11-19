@@ -11,8 +11,8 @@ namespace MarathonSoundGen
 
         #region Public Properties
 
-        public static M2SoundsFile SoundsFile;
-        public static bool SoundsFileLoaded = false;
+        public M2SoundsFile SoundsFile;
+        public bool SoundsFileLoaded = false;
 
         public WaveFormat WaveFormat
         {
@@ -184,7 +184,7 @@ namespace MarathonSoundGen
             }
         }
 
-        public static void LoadSoundsFile(string filePath)
+        public void LoadSoundsFile(string filePath)
         {
             SoundsFile = new M2SoundsFile(filePath);
             SoundsFileLoaded = true;
@@ -212,6 +212,23 @@ namespace MarathonSoundGen
             }
 
             GC.SuppressFinalize(this);
+        }
+
+        public void LoadFromFile(string filePath)
+        {
+            // First load sounds file from path
+            string soundsFilePath;
+
+            // Then load all sound sources
+
+        }
+
+        public void SaveToFile(string filePath)
+        {
+            // First save sounds file path
+
+            // Then save all sound sources
+
         }
 
         #endregion

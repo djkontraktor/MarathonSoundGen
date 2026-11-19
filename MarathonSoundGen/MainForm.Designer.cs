@@ -78,6 +78,7 @@
             this.loadSoundscapeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.loadSoundscapeToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
             this.loadSoundscapeToolStripMenuItem.Text = "Load Soundscape";
+            this.loadSoundscapeToolStripMenuItem.Click += new System.EventHandler(this.LoadSoundscapeFileClick);
             // 
             // saveSoundscapeToolStripMenuItem
             // 
@@ -85,6 +86,7 @@
             this.saveSoundscapeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveSoundscapeToolStripMenuItem.Size = new System.Drawing.Size(258, 22);
             this.saveSoundscapeToolStripMenuItem.Text = "Save Soundscape";
+            this.saveSoundscapeToolStripMenuItem.Click += new System.EventHandler(this.SaveSoundscapeFileClick);
             // 
             // loadMarathonSoundsFileToolStripMenuItem
             // 

@@ -36,22 +36,42 @@ namespace MarathonSoundGen
 
         #region Control Callbacks
 
+        private void LoadSoundscapeFileClick(object sender, EventArgs e)
+        {
+            string filePath = PromptSelectSoundscapeFile();
+
+            if (!string.IsNullOrWhiteSpace(filePath))
+            {
+                mSoundEngine.LoadFromFile(filePath);
+            }
+        }
+
+        private void SaveSoundscapeFileClick(object sender, EventArgs e)
+        {
+            string filePath = PromptSaveSoundscapeFile();
+
+            if (!string.IsNullOrWhiteSpace(filePath))
+            {
+                mSoundEngine.SaveToFile(filePath);
+            }
+        }
+
         private void loadMarathonSoundsFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string filePath = PromptSelectSoundFile();
 
             if (!string.IsNullOrWhiteSpace(filePath))
             {
-                SoundEngine.LoadSoundsFile(filePath);
+                mSoundEngine.LoadSoundsFile(filePath);
                 currentSoundFile_toolStripLabel.Text = filePath;
             }
         }
 
         private void AddSoundSourceClick(object sender, EventArgs e)
         {
-            if (SoundEngine.SoundsFileLoaded)
+            if (mSoundEngine.SoundsFileLoaded)
             {
-                SoundSlot firstSlot = SoundEngine.SoundsFile.SoundSlots.First();
+                SoundSlot firstSlot = mSoundEngine.SoundsFile.SoundSlots.First();
                 SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
                 tabPage.SoundChanged += TabPageSoundChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
@@ -84,7 +104,7 @@ namespace MarathonSoundGen
 
             try
             {
-                source.CurrentSound = SoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
+                source.CurrentSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
             }
             catch (Exception ex)
             {
@@ -94,7 +114,7 @@ namespace MarathonSoundGen
 
         private void PlaybackToggled(object sender, EventArgs e)
         {
-            if (SoundEngine.SoundsFileLoaded)
+            if (mSoundEngine.SoundsFileLoaded)
             {
                 SoundSourceTabPage page = sender as SoundSourceTabPage;
 
@@ -142,10 +162,10 @@ namespace MarathonSoundGen
         {
             using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                dialog.Title = "Select Sound File";
+                dialog.Title = "Open Marathon Sounds File";
 
                 // The dialog may display .sndA and extensionless files.
-                dialog.Filter = "Sound files (*.sndA; extensionless)|*.sndA;*.|sndA files (*.sndA)|*.sndA|All files (*.*)|*.*";
+                dialog.Filter = "Aleph One Format (*.sndA)|*.sndA|Marathon Format (*.*)|*.*";
 
                 dialog.FilterIndex = 1;
                 dialog.CheckFileExists = true;
@@ -173,9 +193,72 @@ namespace MarathonSoundGen
             }
         }
 
+        private static string PromptSelectSoundscapeFile()
+        {
+            using (OpenFileDialog dialog = new OpenFileDialog())
+            {
+                dialog.Title = "Open Soundscape File";
+
+                // The dialog may display .sndA and extensionless files.
+                dialog.Filter = "Soundscape files (*.soundscape)|*.soundscape;*.|All files (*.*)|*.*";
+
+                dialog.FilterIndex = 1;
+                dialog.CheckFileExists = true;
+                dialog.CheckPathExists = true;
+                dialog.Multiselect = false;
+                dialog.AddExtension = false;
+                dialog.RestoreDirectory = true;
+
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return string.Empty;
+                }
+
+                string fullPath = Path.GetFullPath(dialog.FileName);
+
+                // Accept only .sndA or extensionless files.
+                string extension = Path.GetExtension(fullPath);
+
+                if (string.IsNullOrEmpty(extension) || extension.Equals(".soundscape", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    return fullPath;
+                }
+
+                return string.Empty;
+            }
+        }
+
+        private static string PromptSaveSoundscapeFile()
+        {
+            using (SaveFileDialog dialog = new SaveFileDialog())
+            {
+                dialog.Title = "Save Soundscape File";
+                dialog.Filter = "Soundscape files (*.soundscape)|*.soundscape";
+                dialog.DefaultExt = "soundscape";
+                dialog.AddExtension = true;
+                dialog.OverwritePrompt = true;
+                dialog.CheckPathExists = true;
+                dialog.FileName = "mysoundscape.soundscape";
+
+                if (dialog.ShowDialog() != DialogResult.OK)
+                {
+                    return string.Empty;
+                }
+
+                string fullPath = Path.GetFullPath(dialog.FileName);
+
+                if (!string.Equals(Path.GetExtension(fullPath), ".soundscape", System.StringComparison.OrdinalIgnoreCase))
+                {
+                    fullPath += ".soundscape";
+                }
+
+                return fullPath;
+            }
+        }
+
         private static void ShowLoadSoundsFileErrorDialog()
         {
-            MessageBox.Show("No sounds file is loaded. Please load a Marathon sounds file or Aleph One .sndA file first.", "No Sounds File Loaded", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("No sounds file is loaded. Please load a classic Macintosh-formatted Marathon sounds file or Aleph One .sndA file first.", "No Sounds File Loaded", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         #endregion
