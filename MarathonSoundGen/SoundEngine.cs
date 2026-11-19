@@ -9,13 +9,13 @@ namespace MarathonSoundGen
 
         public static SoundScape SoundScape = new SoundScape();
         public static M2SoundsFile SoundsFile;
+        public static bool SoundsFileLoaded = false;
 
         #endregion
 
         #region Private Properties
 
 
-        private static bool mInitialized = false;
 
         #endregion
 
@@ -24,12 +24,12 @@ namespace MarathonSoundGen
         public static void LoadSoundsFile(string filePath)
         {
             SoundsFile = new M2SoundsFile(filePath);
-            Init();
+            SoundsFileLoaded = true;
         }
 
         public static void StartAllSources()
         {
-            if (mInitialized)
+            if (SoundsFileLoaded)
             {
                 foreach (SoundSource source in SoundScape.Sources)
                 {
@@ -40,7 +40,7 @@ namespace MarathonSoundGen
 
         public static void StopAllSources()
         {
-            if (mInitialized)
+            if (SoundsFileLoaded)
             {
                 foreach (SoundSource source in SoundScape.Sources)
                 {
@@ -56,7 +56,7 @@ namespace MarathonSoundGen
                 source.Dispose();
             }
 
-            mInitialized = false;
+            SoundsFileLoaded = false;
         }
 
         public static void AddAmbientSoundSource(AmbientSoundSource source)
@@ -73,10 +73,7 @@ namespace MarathonSoundGen
 
         #region Private Members
 
-        private static void Init()
-        {
-            mInitialized = true;
-        }
+
 
         #endregion
 

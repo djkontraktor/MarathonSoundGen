@@ -47,12 +47,19 @@ namespace MarathonSoundGen
 
         private void AddSoundSourceClick(object sender, EventArgs e)
         {
-            SoundSlot firstSlot = SoundEngine.SoundsFile.SoundSlots.First();
-            SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
-            tabPage.SoundChanged += TabPageSoundChanged;
-            tabPage.PlaybackToggled += PlaybackToggled;
-            mSoundSourcePages.Add(tabPage, new AmbientSoundSource(firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0));
-            UpdateControls();
+            if (SoundEngine.SoundsFileLoaded)
+            {
+                SoundSlot firstSlot = SoundEngine.SoundsFile.SoundSlots.First();
+                SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
+                tabPage.SoundChanged += TabPageSoundChanged;
+                tabPage.PlaybackToggled += PlaybackToggled;
+                mSoundSourcePages.Add(tabPage, new AmbientSoundSource(firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0));
+                UpdateControls();
+            }
+            else
+            {
+                ShowLoadSoundsFileErrorDialog();
+            }
         }
 
         private void TabPageSoundChanged(object sender, EventArgs e)
@@ -75,15 +82,22 @@ namespace MarathonSoundGen
 
         private void PlaybackToggled(object sender, EventArgs e)
         {
-            SoundSourceTabPage page = sender as SoundSourceTabPage;
-
-            if (mSoundSourcePages[page].IsPlaying)
+            if (SoundEngine.SoundsFileLoaded)
             {
-                mSoundSourcePages[page].Stop();
+                SoundSourceTabPage page = sender as SoundSourceTabPage;
+
+                if (mSoundSourcePages[page].IsPlaying)
+                {
+                    mSoundSourcePages[page].Stop();
+                }
+                else
+                {
+                    mSoundSourcePages[page].Start();
+                }
             }
             else
             {
-                mSoundSourcePages[page].Start();
+                ShowLoadSoundsFileErrorDialog();
             }
         }
 
@@ -145,6 +159,11 @@ namespace MarathonSoundGen
 
                 return string.Empty;
             }
+        }
+
+        private static void ShowLoadSoundsFileErrorDialog()
+        {
+            MessageBox.Show("No sounds file is loaded. Please load a Marathon sounds file or Aleph One .sndA file first.", "No Sounds File Loaded", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         #endregion
