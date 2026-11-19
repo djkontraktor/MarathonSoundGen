@@ -9,8 +9,13 @@ namespace MarathonSoundGen
 {
     public partial class MainForm : Form
     {
+
+        #region Private Properties
+
         private Dictionary<TabPage, SoundSource> mSoundSourcePages = new Dictionary<TabPage, SoundSource>();
         private TabPage mSelectedPage;
+
+        #endregion
 
         #region Form Lifecycle
 
@@ -95,6 +100,8 @@ namespace MarathonSoundGen
 
         #endregion
 
+        #region Private Methods
+
         private void UpdateControls()
         {
             this.soundSources_TabControl.TabPages.Clear();
@@ -139,6 +146,8 @@ namespace MarathonSoundGen
                 return string.Empty;
             }
         }
-        
+
+        #endregion
+
     }
 }

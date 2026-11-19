@@ -6,16 +6,27 @@ namespace MarathonSoundGen
 {
     public partial class SoundSourceTabPage : TabPage
     {
+
+        #region Public Properties
+
         public SoundSourcePotControl PotControl = new SoundSourcePotControl();
         public SoundSourceSampleControl SampleControl = new SoundSourceSampleControl();
         public EventHandler SoundChanged;
         public EventHandler PlaybackToggled;
+
+        #endregion
+
+        #region Private Properties
 
         private FlowLayoutPanel mControlPanel = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
         };
         private Button mPlayPauseButton = new Button { Text = "Play/Pause" };
+
+        #endregion
+
+        #region Constructor
 
         public SoundSourceTabPage()
         {
@@ -31,6 +42,10 @@ namespace MarathonSoundGen
             PotControl.SoundPropertyChanged += PotControl_SoundPropertyChanged;
             mPlayPauseButton.Click += PlayPauseButton_Click;
         }
+
+        #endregion
+
+        #region Control Callbacks
 
         private void PlayPauseButton_Click(object sender, EventArgs e)
         {
@@ -53,6 +68,10 @@ namespace MarathonSoundGen
             HandleSoundPropertyChanged();
         }
 
+        #endregion
+
+        #region Private Members
+
         private void HandleSoundPropertyChanged()
         {
             EventHandler handler = SoundChanged;
@@ -62,5 +81,8 @@ namespace MarathonSoundGen
                 handler(this, EventArgs.Empty);
             }
         }
+
+        #endregion
+
     }
 }
