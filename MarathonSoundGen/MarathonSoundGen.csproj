@@ -92,8 +92,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AmbientSoundSource.cs" />
     <Compile Include="AutoDisposeSampleProvider.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="OwnedSampleProvider.cs" />
     <Compile Include="ContinuousRandomSampleProvider.cs" />
     <Compile Include="MixerVoice.cs" />
@@ -124,7 +124,6 @@
     </Compile>
     <Compile Include="VolumePanSampleProvider.cs" />
     <Compile Include="SoundEngine.cs" />
-    <Compile Include="RandomSoundSource.cs" />
     <Compile Include="SoundSource.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

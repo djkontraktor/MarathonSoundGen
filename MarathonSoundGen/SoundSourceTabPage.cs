@@ -11,6 +11,7 @@ namespace MarathonSoundGen
 
         public SoundSourcePotControl PotControl = new SoundSourcePotControl { Dock  = DockStyle.Fill };
         public SoundSourceSampleControl SampleControl = new SoundSourceSampleControl { Dock = DockStyle.Fill };
+        public bool RandomChecked { get; private set; }
         public EventHandler SoundChanged;
         public EventHandler PlaybackToggled;
 
@@ -41,6 +42,7 @@ namespace MarathonSoundGen
 
             SampleControl.PopulateSamples(M2SoundIds.IDs);
             SampleControl.SoundSourceChanged += SampleControl_SoundSourceChanged;
+            SampleControl.RandomCheckedChanged += SampleControl_RandomCheckedChanged;
             PotControl.SoundPropertyChanged += PotControl_SoundPropertyChanged;
             SampleControl.PlayStopButton.Click += PlayPauseButton_Click;
         }
@@ -67,6 +69,12 @@ namespace MarathonSoundGen
         private void SampleControl_SoundSourceChanged(object sender, EventArgs e)
         {
             this.Text = SampleControl.SelectedId.Name;
+            HandleSoundPropertyChanged();
+        }
+
+        private void SampleControl_RandomCheckedChanged(object sender, EventArgs e)
+        {
+            RandomChecked = SampleControl.IsRandom;
             HandleSoundPropertyChanged();
         }
 

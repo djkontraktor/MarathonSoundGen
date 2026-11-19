@@ -47,7 +47,7 @@ namespace MarathonSoundGen
             }
         }
 
-        private void AddAmbientSoundSourceClick(object sender, EventArgs e)
+        private void AddSoundSourceClick(object sender, EventArgs e)
         {
             if (SoundEngine.SoundsFileLoaded)
             {
@@ -55,24 +55,7 @@ namespace MarathonSoundGen
                 SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
                 tabPage.SoundChanged += TabPageSoundChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
-                mSoundSourcePages.Add(tabPage, new AmbientSoundSource(mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0));
-                UpdateControls();
-            }
-            else
-            {
-                ShowLoadSoundsFileErrorDialog();
-            }
-        }
-
-        private void AddRandomSoundSourceClick(object sender, EventArgs e)
-        {
-            if (SoundEngine.SoundsFileLoaded)
-            {
-                SoundSlot firstSlot = SoundEngine.SoundsFile.SoundSlots.First();
-                SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
-                tabPage.SoundChanged += TabPageSoundChanged;
-                tabPage.PlaybackToggled += PlaybackToggled;
-                mSoundSourcePages.Add(tabPage, new RandomSoundSource(mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
+                mSoundSourcePages.Add(tabPage, new SoundSource(SoundSourceType.Ambient, mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
                 UpdateControls();
             }
             else
@@ -85,6 +68,7 @@ namespace MarathonSoundGen
         {
             SoundSourceTabPage page = sender as SoundSourceTabPage;
             SoundSource source = mSoundSourcePages[page];
+            source.SourceType = page.RandomChecked ? SoundSourceType.Random : SoundSourceType.Ambient;
             source.Volume = page.PotControl.Volume;
             source.RandomVolume = page.PotControl.DeltaVolume;
             source.RandomVolumeOffset = page.PotControl.DeltaVolumeOffset;
@@ -94,13 +78,9 @@ namespace MarathonSoundGen
             source.Pan = page.PotControl.Pan;
             source.RandomPan = page.PotControl.DeltaPan;
             source.RandomPanOffset = page.PotControl.DeltaPanOffset;
-
-            if (source is RandomSoundSource randSource)
-            {
-                randSource.Frequency_Hz = page.PotControl.Frequency;
-                randSource.RandomFrequency_Hz = page.PotControl.DeltaFrequency;
-                randSource.RandomFrequencyOffset_Hz = page.PotControl.DeltaFrequencyOffset;
-            }
+            source.Frequency_Hz = page.PotControl.Frequency;
+            source.RandomFrequency_Hz = page.PotControl.DeltaFrequency;
+            source.RandomFrequencyOffset_Hz = page.PotControl.DeltaFrequencyOffset;
 
             try
             {

@@ -11,7 +11,9 @@ namespace MarathonSoundGen
         #region Public Properties
 
         public SoundId SelectedId { get; private set; }
+        public bool IsRandom { get; private set; }
         public event EventHandler SoundSourceChanged;
+        public event EventHandler RandomCheckedChanged;
         public Button PlayStopButton
         {
             get
@@ -56,6 +58,18 @@ namespace MarathonSoundGen
             SelectedId = soundName_ComboBox.SelectedItem as SoundId;
 
             EventHandler handler = SoundSourceChanged;
+
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        private void RandomCheckChanged(object sender, EventArgs e)
+        {
+            IsRandom = random_CheckBox.Checked;
+
+            EventHandler handler = RandomCheckedChanged;
 
             if (handler != null)
             {

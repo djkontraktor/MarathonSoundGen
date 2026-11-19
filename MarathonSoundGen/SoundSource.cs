@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MarathonSoundGen
 {
@@ -13,18 +14,30 @@ namespace MarathonSoundGen
 
         #region Public Properties
 
+        public SoundSourceType SourceType
+        {
+            get
+            {
+                return mSourceType;
+            }
+            set
+            {
+                mSourceType = value;
+            }
+        }
+
         public SoundSlot CurrentSound
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mCurrentSound;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     mCurrentSound = value;
@@ -36,14 +49,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mVolume;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     mVolume = ClampFinite(value, 0.0, 1.0, nameof(value));
@@ -56,14 +69,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mRandomVolume;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     ValidateFinite(value, nameof(value));
@@ -76,14 +89,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mRandomVolumeOffset;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     ValidateFinite(value, nameof(value));
@@ -96,14 +109,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mPitch;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     mPitch = ClampFinite(value, mMinimumPitch, mMaximumPitch, nameof(value));
@@ -116,14 +129,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mRandomPitch;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     ValidateFinite(value, nameof(value));
@@ -136,14 +149,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mRandomPitchOffset;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     ValidateFinite(value, nameof(value));
@@ -156,14 +169,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mPan;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     mPan = ClampFinite(value, -1.0, 1.0, nameof(value));
@@ -176,14 +189,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mRandomPan;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     ValidateFinite(value, nameof(value));
@@ -196,14 +209,14 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mRandomPanOffset;
                 }
             }
             set
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     ThrowIfDisposed();
                     ValidateFinite(value, nameof(value));
@@ -216,10 +229,76 @@ namespace MarathonSoundGen
         {
             get
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     return mPlaying && !mDisposed;
                 }
+            }
+        }
+
+        public double Frequency_Hz
+        {
+            get
+            {
+                lock (mSync)
+                {
+                    return mFrequency_Hz;
+                }
+            }
+            set
+            {
+                ValidatePositiveFinite(value, nameof(value));
+
+                lock (mSync)
+                {
+                    mFrequency_Hz = value;
+                }
+
+                WakeScheduler();
+            }
+        }
+
+        public double RandomFrequency_Hz
+        {
+            get
+            {
+                lock (mSync)
+                {
+                    return mRandomFrequency_Hz;
+                }
+            }
+            set
+            {
+                ValidateFinite(value, nameof(value));
+
+                lock (mSync)
+                {
+                    mRandomFrequency_Hz = Math.Max(0.0, value);
+                }
+
+                WakeScheduler();
+            }
+        }
+
+        public double RandomFrequencyOffset_Hz
+        {
+            get
+            {
+                lock (mSync)
+                {
+                    return mRandomFrequencyOffset_Hz;
+                }
+            }
+            set
+            {
+                ValidateFinite(value, nameof(value));
+
+                lock (mSync)
+                {
+                    mRandomFrequencyOffset_Hz = value;
+                }
+
+                WakeScheduler();
             }
         }
 
@@ -227,12 +306,13 @@ namespace MarathonSoundGen
 
         #endregion
 
-        #region Private/Protected Properties
+        #region Private Properties
 
-        protected const double mMinimumPitch = 0.5;
-        protected const double mMaximumPitch = 2.0;
+        private ContinuousRandomSampleProvider mAmbientProvider;
+        private const double mMinimumPitch = 0.5;
+        private const double mMaximumPitch = 2.0;
 
-        protected SoundEngine SoundEngine
+        private SoundEngine SoundEngine
         {
             get
             {
@@ -240,7 +320,8 @@ namespace MarathonSoundGen
             }
         }
 
-        private readonly object mSyncRoot = new object();
+        private SoundSourceType mSourceType;
+        private readonly object mSync = new object();
         private readonly Random mRng = new Random();
         private SoundSlot mCurrentSound;
         private SoundEngine mSoundEngine;
@@ -256,12 +337,20 @@ namespace MarathonSoundGen
         private double mRandomPanOffset;
         private bool mDisposed;
         private bool mPlaying;
+        private const double mMinimumEffectiveFrequency_Hz = 0.001;
+        private const double mMaximumEffectiveFrequency_Hz = 1000.0;
+        private double mFrequency_Hz;
+        private double mRandomFrequency_Hz;
+        private double mRandomFrequencyOffset_Hz;
+        private CancellationTokenSource mSchedulerCancellation;
+        private Task mSchedulerTask;
 
         #endregion
 
-        #region Constructor
+        #region Constructors
 
-        public SoundSource(SoundEngine soundEngine, SoundSlot soundSlot, double volume, double randomVolume, double randomVolumeOffset, double pitch, double randomPitch, double randomPitchOffset, double pan, double randomPan, double randomPanOffset)
+        public SoundSource(SoundSourceType type, SoundEngine soundEngine, SoundSlot soundSlot, double volume, double randomVolume, double randomVolumeOffset, double pitch, double randomPitch, double randomPitchOffset, double pan, double randomPan, double randomPanOffset,
+            double frequency_Hz, double randomFrequency_Hz, double randomFrequencyOffset_Hz)
         {
             if (soundEngine == null)
             {
@@ -273,6 +362,9 @@ namespace MarathonSoundGen
                 throw new ArgumentNullException(nameof(soundSlot));
             }
 
+            ValidatePositiveFinite(frequency_Hz, nameof(frequency_Hz));
+            ValidateFinite(randomFrequency_Hz, nameof(randomFrequency_Hz));
+            ValidateFinite(randomFrequencyOffset_Hz, nameof(randomFrequencyOffset_Hz));
             ValidateFinite(randomVolume, nameof(randomVolume));
             ValidateFinite(randomVolumeOffset, nameof(randomVolumeOffset));
             ValidateFinite(randomPitch, nameof(randomPitch));
@@ -281,6 +373,7 @@ namespace MarathonSoundGen
             ValidateFinite(randomPanOffset, nameof(randomPanOffset));
 
             mSoundEngine = soundEngine;
+            mSourceType = type;
             mCurrentSound = soundSlot;
 
             mVolume = ClampFinite(volume, 0.0, 1.0, nameof(volume));
@@ -294,15 +387,128 @@ namespace MarathonSoundGen
             mPan = ClampFinite(pan, -1.0, 1.0, nameof(pan));
             mRandomPan = Math.Max(0.0, randomPan);
             mRandomPanOffset = randomPanOffset;
+
+            mFrequency_Hz = frequency_Hz;
+            mRandomFrequency_Hz = Math.Max(0.0, randomFrequency_Hz);
+            mRandomFrequencyOffset_Hz = randomFrequencyOffset_Hz;
         }
 
         #endregion
 
         #region Public Members
 
-        public virtual void Start()
+        public void Start()
         {
-            lock (mSyncRoot)
+            if (mSourceType.Equals(SoundSourceType.Ambient))
+            {
+                lock (mSync)
+                {
+                    if (mAmbientProvider != null)
+                    {
+                        return;
+                    }
+
+                    if (!TrySetStarted())
+                    {
+                        return;
+                    }
+
+                    ContinuousRandomSampleProvider provider = new ContinuousRandomSampleProvider(SoundEngine.WaveFormat, CreateRandomOwnedProvider);
+
+                    try
+                    {
+                        SoundEngine.ActivateSource(this);
+                        SoundEngine.AddInput(provider);
+                        mAmbientProvider = provider;
+                    }
+                    catch
+                    {
+                        SetStopped();
+                        SoundEngine.RemoveInput(provider);
+                        SoundEngine.DeactivateSource(this);
+                        provider.Dispose();
+                        throw;
+                    }
+                }
+            }
+            else
+            {
+                lock (mSync)
+                {
+                    if (mSchedulerTask != null && !mSchedulerTask.IsCompleted)
+                    {
+                        return;
+                    }
+
+                    mSchedulerCancellation = new CancellationTokenSource();
+
+                    CancellationToken token = mSchedulerCancellation.Token;
+
+                    // Set the base started state and play the first trigger
+                    // immediately.
+                    StartBase();
+
+                    mSchedulerTask = Task.Run(() => RunSchedulerAsync(token), token);
+                }
+            }
+        }
+
+        public void Stop()
+        {
+            if (mSourceType.Equals(SoundSourceType.Ambient))
+            {
+                ContinuousRandomSampleProvider provider;
+
+                lock (mSync)
+                {
+                    provider = mAmbientProvider;
+                    mAmbientProvider = null;
+                    SetStopped();
+                }
+
+                if (provider != null)
+                {
+                    provider.Stop();
+                    SoundEngine.RemoveInput(provider);
+                    provider.Dispose();
+                }
+
+                SoundEngine.DeactivateSource(this);
+            }
+            else
+            {
+                CancellationTokenSource cancellation;
+                Task schedulerTask;
+
+                lock (mSync)
+                {
+                    cancellation = mSchedulerCancellation;
+                    schedulerTask = mSchedulerTask;
+
+                    mSchedulerCancellation = null;
+                    mSchedulerTask = null;
+                }
+
+                if (cancellation != null)
+                {
+                    cancellation.Cancel();
+                }
+
+                // Do not synchronously wait on schedulerTask here. Stop() may be
+                // called from a UI thread, and waiting is unnecessary because the
+                // cancellation token ends the scheduler promptly.
+                StopBase();
+
+                if (cancellation != null)
+                {
+                    cancellation.Dispose();
+                }
+            }
+        }
+
+        private void StartBase()
+        {
+            lock (mSync)
             {
                 ThrowIfDisposed();
 
@@ -322,7 +528,7 @@ namespace MarathonSoundGen
             }
             catch
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     mPlaying = false;
                 }
@@ -333,11 +539,11 @@ namespace MarathonSoundGen
             }
         }
 
-        public virtual void Stop()
+        private void StopBase()
         {
             MixerVoice voice;
 
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 ThrowIfDisposed();
 
@@ -358,19 +564,20 @@ namespace MarathonSoundGen
 
         public virtual void Dispose()
         {
+            Stop();
             GC.SuppressFinalize(this);
         }
 
         #endregion
 
-        #region Protected/Private Members
+        #region Private Members
 
-        protected OwnedSampleProvider CreateRandomOwnedProvider()
+        private OwnedSampleProvider CreateRandomOwnedProvider()
         {
             SoundPermutation selectedSound;
             PlaybackParameters parameters;
 
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 ThrowIfDisposed();
                 ValidateSoundSlot();
@@ -452,12 +659,12 @@ namespace MarathonSoundGen
             }
         }
 
-        protected void PlaySoundSingle()
+        private void PlaySoundSingle()
         {
             MixerVoice previousVoice;
             MixerVoice newVoice;
 
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 ThrowIfDisposed();
 
@@ -491,7 +698,7 @@ namespace MarathonSoundGen
             }
             catch
             {
-                lock (mSyncRoot)
+                lock (mSync)
                 {
                     if (ReferenceEquals(mActiveVoice, newVoice))
                     {
@@ -520,7 +727,7 @@ namespace MarathonSoundGen
         /// <summary>
         /// Called after a voice finishes naturally or stops with an error.
         /// </summary>
-        protected virtual void OnVoiceFinished(Exception exception)
+        private void OnVoiceFinished(Exception exception)
         {
             if (exception != null)
             {
@@ -528,15 +735,15 @@ namespace MarathonSoundGen
             }
         }
 
-        protected virtual void OnPlaybackError(Exception exception)
+        private void OnPlaybackError(Exception exception)
         {
             // Add application logging here if desired.
             // Debug.WriteLine(exception);
         }
 
-        protected double NextRandomSignedValue(double amount)
+        private double NextRandomSignedValue(double amount)
         {
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 ValidateFinite(amount, nameof(amount));
 
@@ -549,7 +756,7 @@ namespace MarathonSoundGen
             }
         }
 
-        protected static double Clamp(double value, double minimum, double maximum)
+        private static double Clamp(double value, double minimum, double maximum)
         {
             if (value < minimum)
             {
@@ -564,7 +771,7 @@ namespace MarathonSoundGen
             return value;
         }
 
-        protected static void ValidateFinite(double value, string parameterName)
+        private static void ValidateFinite(double value, string parameterName)
         {
             if (double.IsNaN(value) || double.IsInfinity(value))
             {
@@ -770,7 +977,7 @@ namespace MarathonSoundGen
         {
             bool continuePlayback;
 
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 // If another sound was already assigned, this completion belongs
                 // to an obsolete voice and must not start another sound.
@@ -808,9 +1015,9 @@ namespace MarathonSoundGen
             }
         }
 
-        protected bool TrySetStarted()
+        private bool TrySetStarted()
         {
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 ThrowIfDisposed();
 
@@ -826,11 +1033,88 @@ namespace MarathonSoundGen
             }
         }
 
-        protected void SetStopped()
+        private void SetStopped()
         {
-            lock (mSyncRoot)
+            lock (mSync)
             {
                 mPlaying = false;
+            }
+        }
+
+        private async Task RunSchedulerAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                while (!cancellationToken.IsCancellationRequested && Playing)
+                {
+                    TimeSpan delay = GetNextTriggerDelay();
+
+                    await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+
+                    if (cancellationToken.IsCancellationRequested || !Playing)
+                    {
+                        break;
+                    }
+
+                    // This starts a new voice without stopping any voice that is
+                    // already running. Random volume, pitch, and pan are selected
+                    // independently for this trigger.
+                    PlaySoundSingle();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when Stop() is called.
+            }
+            catch (ObjectDisposedException)
+            {
+                // Expected if disposal races with the scheduler.
+            }
+            catch (Exception exception)
+            {
+                OnPlaybackError(exception);
+            }
+        }
+
+        private TimeSpan GetNextTriggerDelay()
+        {
+            double baseFrequency_Hz;
+            double randomFrequency_Hz;
+            double frequencyOffset_Hz;
+
+            lock (mSync)
+            {
+                baseFrequency_Hz = mFrequency_Hz;
+                randomFrequency_Hz = mRandomFrequency_Hz;
+                frequencyOffset_Hz = mRandomFrequencyOffset_Hz;
+            }
+
+            double effectiveFrequency_Hz = baseFrequency_Hz + frequencyOffset_Hz + NextRandomSignedValue(randomFrequency_Hz);
+            effectiveFrequency_Hz = Clamp(effectiveFrequency_Hz, mMinimumEffectiveFrequency_Hz, mMaximumEffectiveFrequency_Hz);
+
+            double delay_s = 1.0 / effectiveFrequency_Hz;
+
+            return TimeSpan.FromSeconds(delay_s);
+        }
+
+        private void WakeScheduler()
+        {
+            /*
+             * Property changes affect the next scheduled period. The currently
+             * active Task.Delay is not interrupted.
+             *
+             * If you want changes to reset the current delay immediately, use a
+             * separate scheduler wake CancellationTokenSource.
+             */
+        }
+
+        private static void ValidatePositiveFinite(double value, string parameterName)
+        {
+            ValidateFinite(value, parameterName);
+
+            if (value <= 0.0)
+            {
+                throw new ArgumentOutOfRangeException(parameterName, "Frequency must be greater than zero.");
             }
         }
 

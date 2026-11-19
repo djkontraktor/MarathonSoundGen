@@ -32,6 +32,7 @@
             this.flowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.soundSource_Label = new System.Windows.Forms.Label();
             this.playStop_Button = new System.Windows.Forms.Button();
+            this.random_CheckBox = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,10 +50,11 @@
             this.flowLayoutPanel.Controls.Add(this.soundSource_Label);
             this.flowLayoutPanel.Controls.Add(this.soundName_ComboBox);
             this.flowLayoutPanel.Controls.Add(this.playStop_Button);
+            this.flowLayoutPanel.Controls.Add(this.random_CheckBox);
             this.flowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel.Name = "flowLayoutPanel";
-            this.flowLayoutPanel.Size = new System.Drawing.Size(398, 57);
+            this.flowLayoutPanel.Size = new System.Drawing.Size(640, 57);
             this.flowLayoutPanel.TabIndex = 1;
             // 
             // soundSource_Label
@@ -75,13 +77,25 @@
             this.playStop_Button.Text = "Play/Stop";
             this.playStop_Button.UseVisualStyleBackColor = true;
             // 
+            // random_CheckBox
+            // 
+            this.random_CheckBox.AutoSize = true;
+            this.random_CheckBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.random_CheckBox.Location = new System.Drawing.Point(395, 3);
+            this.random_CheckBox.Name = "random_CheckBox";
+            this.random_CheckBox.Size = new System.Drawing.Size(144, 23);
+            this.random_CheckBox.TabIndex = 4;
+            this.random_CheckBox.Text = "Play As Random Sound?";
+            this.random_CheckBox.UseVisualStyleBackColor = true;
+            this.random_CheckBox.CheckedChanged += new System.EventHandler(this.RandomCheckChanged);
+            // 
             // SoundSourceSampleControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.flowLayoutPanel);
             this.Name = "SoundSourceSampleControl";
-            this.Size = new System.Drawing.Size(398, 57);
+            this.Size = new System.Drawing.Size(640, 57);
             this.flowLayoutPanel.ResumeLayout(false);
             this.flowLayoutPanel.PerformLayout();
             this.ResumeLayout(false);
@@ -93,5 +107,6 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel;
         private System.Windows.Forms.Label soundSource_Label;
         private System.Windows.Forms.Button playStop_Button;
+        private System.Windows.Forms.CheckBox random_CheckBox;
     }
 }
