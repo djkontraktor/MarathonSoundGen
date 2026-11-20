@@ -35,9 +35,9 @@ namespace MarathonSoundGen
         /// <summary>
         /// Make a new default tab page.
         /// </summary>
-        public SoundSourceTabPage()
+        public SoundSourceTabPage(SoundsFileFormat format)
         {
-            ConstructBase();
+            ConstructBase(format);
         }
 
         /// <summary>
@@ -46,11 +46,11 @@ namespace MarathonSoundGen
         /// <param name="soundSource"></param>
         public SoundSourceTabPage(SoundSource soundSource)
         {
-            ConstructBase();
+            ConstructBase(soundSource.Format);
             PopulateControls(soundSource);
         }
 
-        private void ConstructBase()
+        private void ConstructBase(SoundsFileFormat format)
         {
             InitializeComponent();
 
@@ -58,7 +58,16 @@ namespace MarathonSoundGen
             master_SplitContainer.Panel1.Controls.Add(SampleControl);
             master_SplitContainer.Panel2.Controls.Add(PotControl);
 
-            SampleControl.PopulateSamples(M2SoundIds.IDs);
+            switch (format)
+            {
+                case SoundsFileFormat.M1:
+                    SampleControl.PopulateSamples(M1SoundIds.IDs);
+                    break;
+                case SoundsFileFormat.M2:
+                    SampleControl.PopulateSamples(M2SoundIds.IDs);
+                    break;
+            }
+
             SampleControl.SoundSourceChanged += SampleControl_SoundSourceChanged;
             SampleControl.RandomCheckedChanged += SampleControl_RandomCheckedChanged;
             PotControl.SoundPropertyChanged += PotControl_SoundPropertyChanged;

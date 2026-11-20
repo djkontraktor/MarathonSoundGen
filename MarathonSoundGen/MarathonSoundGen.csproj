@@ -93,6 +93,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoDisposeSampleProvider.cs" />
+    <Compile Include="QuickAuditionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="QuickAuditionForm.Designer.cs">
+      <DependentUpon>QuickAuditionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="SampleRateOverrideSampleProvider.cs" />
     <Compile Include="PitchAndSpeedSampleProvider.cs" />
     <Compile Include="Enums.cs" />
@@ -150,6 +156,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="QuickAuditionForm.resx">
+      <DependentUpon>QuickAuditionForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SoundSourcePotControl.resx">
       <DependentUpon>SoundSourcePotControl.cs</DependentUpon>
     </EmbeddedResource>

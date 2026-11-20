@@ -115,10 +115,10 @@ namespace MarathonSoundGen
             if (mSoundEngine.SoundsFileLoaded)
             {
                 SoundSlot firstSlot = mSoundEngine.SoundsFile.SoundSlots.First();
-                SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
+                SoundSourceTabPage tabPage = new SoundSourceTabPage(mSoundEngine.Format) { Text = firstSlot.ID.Name, };
                 tabPage.SoundChanged += TabPageSoundChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
-                SoundSourcePages.Add(tabPage, new SoundSource(SoundSourceType.Ambient, mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
+                SoundSourcePages.Add(tabPage, new SoundSource(SoundSourceType.Ambient, mSoundEngine.Format, mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
                 UpdateControls();
             }
             else
@@ -299,7 +299,7 @@ namespace MarathonSoundGen
                 dialog.Title = "Open Marathon Sounds File";
 
                 // The dialog may display .sndA and extensionless files.
-                dialog.Filter = "Aleph One Format (*.sndA)|*.sndA|Marathon Format (*.*)|*.*";
+                dialog.Filter = "Aleph One Format (*.sndA)|*.sndA|M1A1 Format (*.sndZ)|*.sndZ|Marathon Format (*.*)|*.*";
 
                 dialog.FilterIndex = 1;
                 dialog.CheckFileExists = true;
@@ -318,7 +318,9 @@ namespace MarathonSoundGen
                 // Accept only .sndA or extensionless files.
                 string extension = Path.GetExtension(fullPath);
 
-                if (string.IsNullOrEmpty(extension) || extension.Equals(".sndA", System.StringComparison.OrdinalIgnoreCase))
+                if (string.IsNullOrEmpty(extension) ||
+                    extension.Equals(".sndA", System.StringComparison.OrdinalIgnoreCase) ||
+                    extension.Equals(".sndZ", System.StringComparison.OrdinalIgnoreCase))
                 {
                     return fullPath;
                 }

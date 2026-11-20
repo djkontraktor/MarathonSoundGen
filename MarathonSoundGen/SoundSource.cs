@@ -35,6 +35,14 @@ namespace MarathonSoundGen
             }
         }
 
+        public SoundsFileFormat Format
+        {
+            get
+            {
+                return mFormat;
+            }
+        }
+
         public SoundSlot CurrentSound
         {
             get
@@ -317,6 +325,7 @@ namespace MarathonSoundGen
 
         #region Private Properties
 
+        private SoundsFileFormat mFormat;
         private ContinuousRandomSampleProvider mAmbientProvider;
         private const double mMinimumPitch = 0.5;
         private const double mMaximumPitch = 2.0;
@@ -349,7 +358,7 @@ namespace MarathonSoundGen
 
         #region Constructors
 
-        public SoundSource(SoundSourceType type, SoundEngine soundEngine, SoundSlot soundSlot, double volume, double randomVolume, double randomVolumeOffset, double pitch, double randomPitch, double randomPitchOffset, double pan, double randomPan, double randomPanOffset,
+        public SoundSource(SoundSourceType type, SoundsFileFormat format, SoundEngine soundEngine, SoundSlot soundSlot, double volume, double randomVolume, double randomVolumeOffset, double pitch, double randomPitch, double randomPitchOffset, double pan, double randomPan, double randomPanOffset,
             double frequency_Hz, double randomFrequency_Hz, double randomFrequencyOffset_Hz)
         {
             if (soundEngine == null)
@@ -374,6 +383,7 @@ namespace MarathonSoundGen
 
             mSoundEngine = soundEngine;
             mSourceType = type;
+            mFormat = format;
             mCurrentSound = soundSlot;
 
             mVolume = ClampFinite(volume, 0.0, 1.0, nameof(volume));

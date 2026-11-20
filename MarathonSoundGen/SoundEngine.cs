@@ -16,8 +16,16 @@ namespace MarathonSoundGen
 
         #region Public Properties
 
-        public M2SoundsFile SoundsFile;
+        public SoundsFile SoundsFile;
         public bool SoundsFileLoaded = false;
+
+        public SoundsFileFormat Format
+        {
+            get
+            {
+                return mFormat;
+            }
+        }
 
         public WaveFormat WaveFormat
         {
@@ -53,6 +61,7 @@ namespace MarathonSoundGen
 
         #region Private Properties
 
+        private SoundsFileFormat mFormat;
         private readonly object mSync = new object();
         private readonly MixingSampleProvider mMixer;
         private readonly WaveOutEvent mOutputDevice;
@@ -192,8 +201,20 @@ namespace MarathonSoundGen
 
         public void LoadSoundsFile(string filePath)
         {
+            string ext = Path.GetExtension(filePath).ToLower();
             mSoundsFilePath = filePath;
-            SoundsFile = new M2SoundsFile(filePath);
+
+            if (ext.Equals(".snda"))
+            {
+                SoundsFile = new M2SoundsFile(filePath);
+                mFormat = SoundsFileFormat.M2;
+            }
+            else if (ext.Equals(".sndz"))
+            {
+                SoundsFile = new M1SoundsFile(filePath);
+                mFormat = SoundsFileFormat.M1;
+            }
+
             SoundsFileLoaded = true;
         }
 
@@ -281,7 +302,7 @@ namespace MarathonSoundGen
                  * the SoundSource. The newly created source should normally
                  * not be playing, but this order minimizes side effects.
                  */
-                SoundSource soundSource = new SoundSource(sourceType, this, soundSlot, volume, randomVolume, randomVolumeOffset, pitch, randomPitch, randomPitchOffset, pan, randomPan, randomPanOffset, frequency_Hz, randomFrequency_Hz, randomFrequencyOffset_Hz);
+                SoundSource soundSource = new SoundSource(sourceType, mFormat, this, soundSlot, volume, randomVolume, randomVolumeOffset, pitch, randomPitch, randomPitchOffset, pan, randomPan, randomPanOffset, frequency_Hz, randomFrequency_Hz, randomFrequencyOffset_Hz);
 
                 soundSources.Add(soundSource);
             }
