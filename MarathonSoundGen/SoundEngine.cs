@@ -3,6 +3,11 @@ using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace MarathonSoundGen
 {
@@ -54,6 +59,7 @@ namespace MarathonSoundGen
         private readonly HashSet<object> mActiveSources = new HashSet<object>();
         private bool mOutputEnabled;
         private bool mDisposed;
+        private string mSoundsFilePath;
 
         #endregion
 
@@ -186,6 +192,7 @@ namespace MarathonSoundGen
 
         public void LoadSoundsFile(string filePath)
         {
+            mSoundsFilePath = filePath;
             SoundsFile = new M2SoundsFile(filePath);
             SoundsFileLoaded = true;
         }
@@ -214,20 +221,169 @@ namespace MarathonSoundGen
             GC.SuppressFinalize(this);
         }
 
-        public void LoadFromFile(string filePath)
+        public List<SoundSource> LoadFromFile(string filePath, out string soundsFilePath)
         {
-            // First load sounds file from path
-            string soundsFilePath;
+            List<SoundSource> soundSources = new List<SoundSource>();
 
-            // Then load all sound sources
+            XDocument document = XDocument.Load(filePath, LoadOptions.SetLineInfo);
+            XElement root = document.Element("Soundscape");
 
+            if (root == null)
+            {
+                throw new InvalidDataException("The soundscape file does not contain a Soundscape root element.");
+            }
+
+            XElement soundsPathElement = root.Element("SoundsFilePath");
+
+            if (soundsPathElement == null)
+            {
+                throw CreateMissingElementException(root, "SoundsFilePath");
+            }
+
+            soundsFilePath = soundsPathElement.Value;
+            mSoundsFilePath = soundsFilePath;
+            LoadSoundsFile(mSoundsFilePath);
+
+            XElement sourcesElement = root.Element("SoundSources");
+
+            if (sourcesElement == null)
+            {
+                throw CreateMissingElementException(root, "SoundSources");
+            }
+
+            foreach (XElement sourceElement in sourcesElement.Elements("SoundSource"))
+            {
+                SoundSourceType sourceType = ReadEnum<SoundSourceType>(sourceElement, "SourceType");
+
+                int soundSlotIndex = ReadInt32(sourceElement, "SoundSlotIndex");
+                double volume = ReadDouble(sourceElement, "Volume");
+                double randomVolume = ReadDouble(sourceElement, "RandomVolume");
+                double randomVolumeOffset = ReadDouble(sourceElement, "RandomVolumeOffset");
+                double pitch = ReadDouble(sourceElement, "Pitch");
+                double randomPitch = ReadDouble(sourceElement, "RandomPitch");
+                double randomPitchOffset = ReadDouble(sourceElement, "RandomPitchOffset");
+                double pan = ReadDouble(sourceElement, "Pan");
+                double randomPan = ReadDouble(sourceElement, "RandomPan");
+                double randomPanOffset = ReadDouble(sourceElement, "RandomPanOffset");
+                double frequency_Hz = ReadDouble(sourceElement, "Frequency_Hz");
+                double randomFrequency_Hz = ReadDouble(sourceElement, "RandomFrequency_Hz");
+                double randomFrequencyOffset_Hz = ReadDouble(sourceElement, "RandomFrequencyOffset_Hz");
+
+                SoundSlot soundSlot = SoundsFile.SoundSlots.Where(s => s.ID.Index == soundSlotIndex).First();
+
+                if (soundSlot == null)
+                {
+                    throw new InvalidDataException("No SoundSlot could be created for index " + soundSlotIndex.ToString(CultureInfo.InvariantCulture) + ".");
+                }
+
+                /*
+                 * Assign SourceType last if changing it can stop and restart
+                 * the SoundSource. The newly created source should normally
+                 * not be playing, but this order minimizes side effects.
+                 */
+                SoundSource soundSource = new SoundSource(sourceType, this, soundSlot, volume, randomVolume, randomVolumeOffset, pitch, randomPitch, randomPitchOffset, pan, randomPan, randomPanOffset, frequency_Hz, randomFrequency_Hz, randomFrequencyOffset_Hz);
+
+                soundSources.Add(soundSource);
+            }
+
+            return soundSources;
         }
 
-        public void SaveToFile(string filePath)
+        public void SaveToFile(string filePath, List<SoundSource> soundSources)
         {
-            // First save sounds file path
+            string fullPath = Path.GetFullPath(filePath);
+            string directory = Path.GetDirectoryName(fullPath);
 
-            // Then save all sound sources
+            XElement sourcesElement = new XElement("SoundSources");
+
+            for (int index = 0; index < soundSources.Count; index++)
+            {
+                SoundSource soundSource = soundSources[index];
+
+                if (soundSource == null)
+                {
+                    throw new InvalidDataException("The sound-source list contains a null item at index " + index.ToString(CultureInfo.InvariantCulture) + ".");
+                }
+
+                if (soundSource.CurrentSound == null)
+                {
+                    throw new InvalidDataException("The SoundSource at list index " + index.ToString(CultureInfo.InvariantCulture) + " does not have a CurrentSound.");
+                }
+
+                sourcesElement.Add(
+                    new XElement(
+                        "SoundSource",
+                        new XElement("SourceType", soundSource.SourceType.ToString()),
+                        new XElement("SoundSlotIndex", soundSource.CurrentSound.ID.Index),
+                        new XElement("Volume", FormatDouble(soundSource.Volume)),
+                        new XElement("RandomVolume", FormatDouble(soundSource.RandomVolume)),
+                        new XElement("RandomVolumeOffset", FormatDouble(soundSource.RandomVolumeOffset)),
+                        new XElement("Pitch", FormatDouble(soundSource.Pitch)),
+                        new XElement("RandomPitch", FormatDouble(soundSource.RandomPitch)),
+                        new XElement("RandomPitchOffset", FormatDouble(soundSource.RandomPitchOffset)),
+                        new XElement("Pan", FormatDouble(soundSource.Pan)),
+                        new XElement("RandomPan", FormatDouble(soundSource.RandomPan)),
+                        new XElement("RandomPanOffset", FormatDouble(soundSource.RandomPanOffset)),
+                        new XElement("Frequency_Hz", FormatDouble(soundSource.Frequency_Hz)),
+                        new XElement("RandomFrequency_Hz", FormatDouble(soundSource.RandomFrequency_Hz)),
+                        new XElement("RandomFrequencyOffset_Hz", FormatDouble(soundSource.RandomFrequencyOffset_Hz))));
+            }
+
+            XDocument document = new XDocument(new XDeclaration("1.0", "utf-8", null), new XElement("Soundscape", new XElement("SoundsFilePath", mSoundsFilePath), sourcesElement));
+
+            XmlWriterSettings settings = new XmlWriterSettings
+            {
+                Indent = true,
+                IndentChars = "  ",
+                NewLineChars = Environment.NewLine,
+                NewLineHandling = NewLineHandling.Replace,
+                OmitXmlDeclaration = false
+            };
+
+            /*
+             * Write to a temporary file first so an exception does not leave
+             * the original soundscape file partially overwritten.
+             */
+            string temporaryPath = fullPath + ".tmp";
+
+            try
+            {
+                using (XmlWriter writer = XmlWriter.Create(temporaryPath, settings))
+                {
+                    document.Save(writer);
+                }
+
+                if (File.Exists(fullPath))
+                {
+                    string backupPath = fullPath + ".bak";
+
+                    try
+                    {
+                        File.Replace(temporaryPath, fullPath, backupPath, true);
+
+                        if (File.Exists(backupPath))
+                        {
+                            File.Delete(backupPath);
+                        }
+                    }
+                    catch (PlatformNotSupportedException)
+                    {
+                        File.Delete(fullPath);
+                        File.Move(temporaryPath, fullPath);
+                    }
+                }
+                else
+                {
+                    File.Move(temporaryPath, fullPath);
+                }
+            }
+            finally
+            {
+                if (File.Exists(temporaryPath))
+                {
+                    File.Delete(temporaryPath);
+                }
+            }
 
         }
 
@@ -249,6 +405,97 @@ namespace MarathonSoundGen
             {
                 throw new ObjectDisposedException(nameof(SoundEngine));
             }
+        }
+
+        private static string FormatDouble(double value)
+        {
+            if (double.IsNaN(value) || double.IsInfinity(value))
+            {
+                throw new InvalidDataException("A sound-source numeric value is not finite.");
+            }
+
+            return value.ToString("R", CultureInfo.InvariantCulture);
+        }
+
+        private static double ReadDouble(XElement parent, string elementName)
+        {
+            string value = ReadRequiredValue(parent, elementName);
+
+            double result;
+
+            if (!double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
+            {
+                throw CreateInvalidValueException(parent.Element(elementName), elementName, value);
+            }
+
+            if (double.IsNaN(result) || double.IsInfinity(result))
+            {
+                throw CreateInvalidValueException(parent.Element(elementName), elementName, value);
+            }
+
+            return result;
+        }
+
+        private static int ReadInt32(XElement parent, string elementName)
+        {
+            string value = ReadRequiredValue(parent, elementName);
+
+            int result;
+
+            if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
+            {
+                throw CreateInvalidValueException(parent.Element(elementName), elementName, value);
+            }
+
+            return result;
+        }
+
+        private static TEnum ReadEnum<TEnum>(XElement parent, string elementName) where TEnum : struct
+        {
+            string value = ReadRequiredValue(parent, elementName);
+
+            TEnum result;
+
+            if (!Enum.TryParse(value, true, out result) || !Enum.IsDefined(typeof(TEnum), result))
+            {
+                throw CreateInvalidValueException(parent.Element(elementName), elementName, value);
+            }
+
+            return result;
+        }
+
+        private static string ReadRequiredValue(XElement parent, string elementName)
+        {
+            XElement element = parent.Element(elementName);
+
+            if (element == null)
+            {
+                throw CreateMissingElementException(parent, elementName);
+            }
+
+            return element.Value;
+        }
+
+        private static InvalidDataException CreateMissingElementException(XElement parent, string elementName)
+        {
+            return new InvalidDataException("Required XML element '" + elementName + "' is missing from '" + parent.Name.LocalName + "'." + GetLineDescription(parent));
+        }
+
+        private static InvalidDataException CreateInvalidValueException(XElement element, string elementName, string value)
+        {
+            return new InvalidDataException("The value '" + value + "' is invalid for XML element '" + elementName + "'." + GetLineDescription(element));
+        }
+
+        private static string GetLineDescription(XElement element)
+        {
+            IXmlLineInfo lineInfo = element as IXmlLineInfo;
+
+            if (lineInfo != null && lineInfo.HasLineInfo())
+            {
+                return " Line " + lineInfo.LineNumber.ToString( CultureInfo.InvariantCulture) + ", position " + lineInfo.LinePosition.ToString( CultureInfo.InvariantCulture) + ".";
+            }
+
+            return string.Empty;
         }
 
         #endregion

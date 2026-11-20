@@ -32,7 +32,25 @@ namespace MarathonSoundGen
 
         #region Constructor
 
+        /// <summary>
+        /// Make a new default tab page.
+        /// </summary>
         public SoundSourceTabPage()
+        {
+            ConstructBase();
+        }
+
+        /// <summary>
+        /// Make a tab page from an existing sound source and set its properties.
+        /// </summary>
+        /// <param name="soundSource"></param>
+        public SoundSourceTabPage(SoundSource soundSource)
+        {
+            ConstructBase();
+            PopulateControls(soundSource);
+        }
+
+        private void ConstructBase()
         {
             InitializeComponent();
 
@@ -81,6 +99,24 @@ namespace MarathonSoundGen
         #endregion
 
         #region Private Members
+
+        private void PopulateControls(SoundSource soundSource)
+        {
+            SampleControl.SelectedId = soundSource.CurrentSound.ID;
+            SampleControl.IsRandom = soundSource.SourceType.Equals(SoundSourceType.Random);
+            PotControl.Volume = soundSource.Volume;
+            PotControl.DeltaVolume = soundSource.RandomVolume;
+            PotControl.DeltaVolumeOffset = soundSource.RandomVolumeOffset;
+            PotControl.Pitch = soundSource.Pitch;
+            PotControl.DeltaPitch = soundSource.RandomPitch;
+            PotControl.DeltaPitchOffset = soundSource.RandomPitchOffset;
+            PotControl.Pan = soundSource.Pan;
+            PotControl.DeltaPan = soundSource.RandomPan;
+            PotControl.DeltaPanOffset = soundSource.RandomPanOffset;
+            PotControl.Frequency = soundSource.Frequency_Hz;
+            PotControl.DeltaFrequency = soundSource.RandomFrequency_Hz;
+            PotControl.DeltaFrequencyOffset = soundSource.RandomFrequencyOffset_Hz;
+        }
 
         private void HandleSoundPropertyChanged()
         {

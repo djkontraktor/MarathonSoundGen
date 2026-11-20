@@ -1,6 +1,7 @@
 ﻿using MarathonFileUtils.Sounds;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace MarathonSoundGen
@@ -10,10 +11,35 @@ namespace MarathonSoundGen
 
         #region Public Properties
 
-        public SoundId SelectedId { get; private set; }
-        public bool IsRandom { get; private set; }
+        public SoundId SelectedId
+        {
+            get
+            {
+                return mSelectedId;
+            }
+            set
+            {
+                SoundId matchingSoundId = soundName_ComboBox.Items.Cast<SoundId>().FirstOrDefault(s => s.Id == value.Id);
+                soundName_ComboBox.SelectedItem = matchingSoundId;
+                mSelectedId = value;
+            }
+        }
+
+        public bool IsRandom
+        {
+            get
+            {
+                return mIsRandom;
+            }
+            set
+            {
+                random_CheckBox.Checked = value;
+            }
+        }
+
         public event EventHandler SoundSourceChanged;
         public event EventHandler RandomCheckedChanged;
+
         public Button PlayStopButton
         {
             get
@@ -27,6 +53,8 @@ namespace MarathonSoundGen
         #region Private Properties
 
         private List<SoundId> mSoundIds;
+        private SoundId mSelectedId;
+        private bool mIsRandom;
 
         #endregion
 
@@ -55,7 +83,7 @@ namespace MarathonSoundGen
 
         private void SoundName_ComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            SelectedId = soundName_ComboBox.SelectedItem as SoundId;
+            mSelectedId = soundName_ComboBox.SelectedItem as SoundId;
 
             EventHandler handler = SoundSourceChanged;
 
@@ -67,7 +95,7 @@ namespace MarathonSoundGen
 
         private void RandomCheckChanged(object sender, EventArgs e)
         {
-            IsRandom = random_CheckBox.Checked;
+            mIsRandom = random_CheckBox.Checked;
 
             EventHandler handler = RandomCheckedChanged;
 

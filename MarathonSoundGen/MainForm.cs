@@ -10,10 +10,16 @@ namespace MarathonSoundGen
     public partial class MainForm : Form
     {
 
+        #region Public Properties
+
+        public Dictionary<TabPage, SoundSource> SoundSourcePages = new Dictionary<TabPage, SoundSource>();
+
+        #endregion
+
         #region Private Properties
 
         private readonly SoundEngine mSoundEngine;
-        private Dictionary<TabPage, SoundSource> mSoundSourcePages = new Dictionary<TabPage, SoundSource>();
+        
         private TabPage mSelectedPage;
 
         #endregion
@@ -42,7 +48,17 @@ namespace MarathonSoundGen
 
             if (!string.IsNullOrWhiteSpace(filePath))
             {
-                mSoundEngine.LoadFromFile(filePath);
+                List<SoundSource> soundSources = mSoundEngine.LoadFromFile(filePath, out string soundsFilePath);
+
+                foreach (SoundSource soundSource in soundSources)
+                {
+                    SoundSourceTabPage tabPage = new SoundSourceTabPage(soundSource);
+                    tabPage.SoundChanged += TabPageSoundChanged;
+                    tabPage.PlaybackToggled += PlaybackToggled;
+                    SoundSourcePages.Add(tabPage, soundSource);
+                }
+
+                UpdateControls();
             }
         }
 
@@ -52,7 +68,7 @@ namespace MarathonSoundGen
 
             if (!string.IsNullOrWhiteSpace(filePath))
             {
-                mSoundEngine.SaveToFile(filePath);
+                mSoundEngine.SaveToFile(filePath, SoundSourcePages.Values.ToList());
             }
         }
 
@@ -75,7 +91,7 @@ namespace MarathonSoundGen
                 SoundSourceTabPage tabPage = new SoundSourceTabPage { Text = firstSlot.ID.Name };
                 tabPage.SoundChanged += TabPageSoundChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
-                mSoundSourcePages.Add(tabPage, new SoundSource(SoundSourceType.Ambient, mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
+                SoundSourcePages.Add(tabPage, new SoundSource(SoundSourceType.Ambient, mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
                 UpdateControls();
             }
             else
@@ -87,7 +103,7 @@ namespace MarathonSoundGen
         private void TabPageSoundChanged(object sender, EventArgs e)
         {
             SoundSourceTabPage page = sender as SoundSourceTabPage;
-            SoundSource source = mSoundSourcePages[page];
+            SoundSource source = SoundSourcePages[page];
             source.SourceType = page.RandomChecked ? SoundSourceType.Random : SoundSourceType.Ambient;
             source.Volume = page.PotControl.Volume;
             source.RandomVolume = page.PotControl.DeltaVolume;
@@ -118,13 +134,13 @@ namespace MarathonSoundGen
             {
                 SoundSourceTabPage page = sender as SoundSourceTabPage;
 
-                if (mSoundSourcePages[page].Playing)
+                if (SoundSourcePages[page].Playing)
                 {
-                    mSoundSourcePages[page].Stop();
+                    SoundSourcePages[page].Stop();
                 }
                 else
                 {
-                    mSoundSourcePages[page].Start();
+                    SoundSourcePages[page].Start();
                 }
             }
             else
@@ -135,7 +151,7 @@ namespace MarathonSoundGen
 
         private void RemoveSoundSourceClick(object sender, EventArgs e)
         {
-            mSoundSourcePages.Remove(mSelectedPage);
+            SoundSourcePages.Remove(mSelectedPage);
             UpdateControls();
         }
 
@@ -152,7 +168,7 @@ namespace MarathonSoundGen
         {
             this.soundSources_TabControl.TabPages.Clear();
 
-            foreach (SoundSourceTabPage page in mSoundSourcePages.Keys)
+            foreach (SoundSourceTabPage page in SoundSourcePages.Keys)
             {
                 this.soundSources_TabControl.TabPages.Add(page);
             }
