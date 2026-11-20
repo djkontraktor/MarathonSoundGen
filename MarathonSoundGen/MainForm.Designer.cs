@@ -174,7 +174,7 @@
             this.soundSources_TabControl.SelectedIndex = 0;
             this.soundSources_TabControl.Size = new System.Drawing.Size(800, 425);
             this.soundSources_TabControl.TabIndex = 2;
-            this.soundSources_TabControl.TabIndexChanged += new System.EventHandler(this.TabSwitched);
+            this.soundSources_TabControl.SelectedIndexChanged += new System.EventHandler(this.TabSwitched);
             // 
             // MainForm
             // 

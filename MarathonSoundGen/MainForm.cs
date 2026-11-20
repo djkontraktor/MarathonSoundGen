@@ -31,6 +31,7 @@ namespace MarathonSoundGen
             InitializeComponent();
             this.FormClosing += MainForm_FormClosing;
             mSoundEngine = new SoundEngine(44100, 50);
+            EnsureValidSelectedTab();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -151,13 +152,102 @@ namespace MarathonSoundGen
 
         private void RemoveSoundSourceClick(object sender, EventArgs e)
         {
+            if (mSelectedPage == null || !soundSources_TabControl.TabPages.Contains(mSelectedPage))
+            {
+                return;
+            }
+
+            bool removingSelectedPage = ReferenceEquals(soundSources_TabControl.SelectedTab, mSelectedPage);
+
+            int removedIndex = soundSources_TabControl.TabPages.IndexOf(mSelectedPage);
+
+            SoundSourcePages[mSelectedPage].Dispose();
             SoundSourcePages.Remove(mSelectedPage);
+
+            if (soundSources_TabControl.TabPages.Count == 0)
+            {
+                SetCurrentTabPage(null);
+                UpdateControls();
+                return;
+            }
+
+            if (removingSelectedPage || soundSources_TabControl.SelectedTab == null)
+            {
+                int replacementIndex = Math.Min(removedIndex, soundSources_TabControl.TabPages.Count - 1);
+
+                soundSources_TabControl.SelectedIndex = replacementIndex;
+            }
+
+            EnsureValidSelectedTab();
             UpdateControls();
         }
 
         private void TabSwitched(object sender, EventArgs e)
         {
-            mSelectedPage = this.soundSources_TabControl.SelectedTab;
+            // SelectedTab can be temporarily null while tabs are being added or removed.
+            if (soundSources_TabControl.SelectedTab != null)
+            {
+                SetCurrentTabPage(soundSources_TabControl.SelectedTab);
+                return;
+            }
+
+            // If pages still exist, wait until WinForms finishes updating the control.
+            if (soundSources_TabControl.TabPages.Count > 0 && soundSources_TabControl.IsHandleCreated)
+            {
+                soundSources_TabControl.BeginInvoke((Action)EnsureValidSelectedTab);
+            }
+            else
+            {
+                SetCurrentTabPage(null);
+            }
+        }
+
+        private void SetCurrentTabPage(TabPage tabPage)
+        {
+            if (ReferenceEquals(mSelectedPage, tabPage))
+            {
+                return;
+            }
+
+            mSelectedPage = tabPage;
+
+            // Perform any work required when the effective tab changes.
+            CurrentTabPageChanged(mSelectedPage);
+        }
+
+        private void CurrentTabPageChanged(TabPage currentTabPage)
+        {
+            if (currentTabPage == null)
+            {
+                // There are truly no pages in the TabControl.
+                return;
+            }
+
+            // currentTabPage is the currently displayed page.
+            string pageName = currentTabPage.Name;
+            string pageText = currentTabPage.Text;
+        }
+
+        private void EnsureValidSelectedTab()
+        {
+            if (soundSources_TabControl.IsDisposed)
+            {
+                return;
+            }
+
+            if (soundSources_TabControl.TabPages.Count == 0)
+            {
+                SetCurrentTabPage(null);
+                return;
+            }
+
+            // Select the first page if WinForms currently has no valid selection.
+            if (soundSources_TabControl.SelectedIndex < 0)
+            {
+                soundSources_TabControl.SelectedIndex = 0;
+            }
+
+            SetCurrentTabPage(soundSources_TabControl.SelectedTab);
         }
 
         #endregion
@@ -172,6 +262,8 @@ namespace MarathonSoundGen
             {
                 this.soundSources_TabControl.TabPages.Add(page);
             }
+
+            EnsureValidSelectedTab();
         }
 
         private static string PromptSelectSoundFile()
