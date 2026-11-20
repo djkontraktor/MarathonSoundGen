@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using MarathonFileUtils.Sounds;
+using NAudio.Wave;
 
 namespace MarathonSoundGen
 {

@@ -1,3 +1,6 @@
+using MarathonFileUtils.Sounds;
+using MarathonSoundsPlayer;
+
 namespace MarathonSoundGen
 {
     public partial class MainForm : Form

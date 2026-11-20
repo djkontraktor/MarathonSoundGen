@@ -1,4 +1,6 @@
-﻿namespace MarathonSoundGen
+﻿using System.ComponentModel;
+
+namespace MarathonSoundGen
 {
     public partial class SoundSourcePotControl : UserControl
     {
@@ -7,6 +9,7 @@
 
         public event EventHandler SoundPropertyChanged;
 
+        [DefaultValue(1.0)]
         public double Volume
         {
             get
@@ -20,6 +23,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double DeltaVolume
         {
             get
@@ -33,6 +37,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double DeltaVolumeOffset
         {
             get
@@ -46,6 +51,7 @@
             }
         }
 
+        [DefaultValue(1.0)]
         public double Pitch
         {
             get
@@ -59,6 +65,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double DeltaPitch
         {
             get
@@ -72,6 +79,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double DeltaPitchOffset
         {
             get
@@ -85,6 +93,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double Pan
         {
             get
@@ -98,6 +107,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double DeltaPan
         {
             get
@@ -111,6 +121,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double DeltaPanOffset
         {
             get
@@ -124,6 +135,7 @@
             }
         }
 
+        [DefaultValue(1.0)]
         public double Frequency
         {
             get
@@ -137,6 +149,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double DeltaFrequency
         {
             get
@@ -150,6 +163,7 @@
             }
         }
 
+        [DefaultValue(0.0)]
         public double DeltaFrequencyOffset
         {
             get

@@ -1,10 +1,14 @@
-﻿namespace MarathonSoundGen
+﻿using MarathonFileUtils.Sounds;
+using System.ComponentModel;
+
+namespace MarathonSoundGen
 {
     public partial class SoundSourceSampleControl : UserControl
     {
 
         #region Public Properties
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public SoundId SelectedId
         {
             get
@@ -19,6 +23,7 @@
             }
         }
 
+        [DefaultValue(false)]
         public bool IsRandom
         {
             get

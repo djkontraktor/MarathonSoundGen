@@ -1,4 +1,7 @@
-﻿namespace MarathonSoundGen
+﻿using NAudio.Gui;
+using System.ComponentModel;
+
+namespace MarathonSoundGen
 {
     public partial class LabeledPot : UserControl
     {
@@ -13,6 +16,7 @@
             }
         }
 
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public double Value
         {
             get

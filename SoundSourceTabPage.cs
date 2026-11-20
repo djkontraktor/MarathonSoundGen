@@ -1,4 +1,7 @@
-﻿namespace MarathonSoundGen
+﻿using MarathonFileUtils.Sounds;
+using MarathonSoundsPlayer;
+
+namespace MarathonSoundGen
 {
     public partial class SoundSourceTabPage : TabPage
     {
