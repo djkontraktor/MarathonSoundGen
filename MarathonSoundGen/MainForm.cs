@@ -84,6 +84,32 @@ namespace MarathonSoundGen
             }
         }
 
+        private void AllSoundSources_TogglePlaybackClick(object sender, EventArgs e)
+        {
+            if (mSoundEngine.SoundsFileLoaded)
+            {
+                bool[] votes = SoundSourcePages.Select(src => src.Value.Playing).ToArray();
+
+                bool majorityPlaying = ( votes.Length > 0 ) && ( (votes.Count(vote => vote) * 2) >= votes.Length );
+
+                foreach (KeyValuePair<TabPage, SoundSource> src in SoundSourcePages)
+                {
+                    if (majorityPlaying)
+                    {
+                        src.Value.Stop();
+                    }
+                    else
+                    {
+                        src.Value.Start();
+                    }
+                }
+            }
+            else
+            {
+                ShowLoadSoundsFileErrorDialog();
+            }
+        }
+
         private void AddSoundSourceClick(object sender, EventArgs e)
         {
             if (mSoundEngine.SoundsFileLoaded)

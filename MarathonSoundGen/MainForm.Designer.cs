@@ -141,6 +141,7 @@
             this.playAllToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Space)));
             this.playAllToolStripMenuItem.Size = new System.Drawing.Size(288, 22);
             this.playAllToolStripMenuItem.Text = "Play/Stop All Sound Sources";
+            this.playAllToolStripMenuItem.Click += new System.EventHandler(this.AllSoundSources_TogglePlaybackClick);
             // 
             // addSoundSourceToolStripMenuItem
             // 
