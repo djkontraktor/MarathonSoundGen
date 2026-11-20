@@ -13,7 +13,7 @@ namespace MarathonSoundGen
         public MemoryStream MemoryStream { get; private set; }
         public WaveFileReader WaveReader { get; private set; }
 
-        public SmbPitchShiftingSampleProvider PitchProvider
+        public PitchAndSpeedSampleProvider PitchProvider
         {
             get;
             private set;
@@ -47,7 +47,7 @@ namespace MarathonSoundGen
 
         #region Constructor
 
-        public MixerVoice(MemoryStream memoryStream, WaveFileReader waveReader, SmbPitchShiftingSampleProvider pitchProvider, VolumePanSampleProvider volumePanProvider, AutoDisposeSampleProvider provider, PlaybackParameters parameters)
+        public MixerVoice(MemoryStream memoryStream, WaveFileReader waveReader, PitchAndSpeedSampleProvider pitchProvider, VolumePanSampleProvider volumePanProvider, AutoDisposeSampleProvider provider, PlaybackParameters parameters)
         {
             MemoryStream = memoryStream;
             WaveReader = waveReader;

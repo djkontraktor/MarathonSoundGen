@@ -820,10 +820,7 @@ namespace MarathonSoundGen
                 waveReader = new WaveFileReader(memoryStream);
                 ISampleProvider sourceProvider = waveReader.ToSampleProvider();
 
-                SmbPitchShiftingSampleProvider pitchProvider = new SmbPitchShiftingSampleProvider(sourceProvider)
-                {
-                    PitchFactor = (float)parameters.Pitch,
-                };
+                PitchAndSpeedSampleProvider pitchProvider = new PitchAndSpeedSampleProvider(sourceProvider, (float)parameters.Pitch);
 
                 VolumePanSampleProvider volumePanProvider = new VolumePanSampleProvider(pitchProvider)
                 {

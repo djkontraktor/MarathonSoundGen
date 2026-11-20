@@ -93,6 +93,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoDisposeSampleProvider.cs" />
+    <Compile Include="SampleRateOverrideSampleProvider.cs" />
+    <Compile Include="PitchAndSpeedSampleProvider.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="OwnedSampleProvider.cs" />
     <Compile Include="ContinuousRandomSampleProvider.cs" />
