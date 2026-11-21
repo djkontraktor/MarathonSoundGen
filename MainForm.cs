@@ -204,6 +204,126 @@ namespace MarathonSoundGen
             UpdateControls();
         }
 
+        private void AddReverbEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddConvolutionReverbEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddDelayEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddChorusEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddCompressorEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddAutoGainControlEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddBitcrusherEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddCabinetEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddDcBlockerEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddDeEsserEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddComfortNoiseEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddEqualizerEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddFeedbackDelayNetReverbEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddFlangerEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddGateEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddLimiterEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddMultibandCompressorEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddNoiseSuppressionEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddPhaserEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddSaturationEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddStereoWidthEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddTransientShaperEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AddTremeloEffect(object sender, EventArgs e)
+        {
+
+        }
+
+        private void RemoveEffectClick(object sender, EventArgs e)
+        {
+
+        }
+
         private void TabSwitched(object sender, EventArgs e)
         {
             // SelectedTab can be temporarily null while tabs are being added or removed.

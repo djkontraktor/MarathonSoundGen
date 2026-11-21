@@ -10,6 +10,7 @@ namespace MarathonSoundGen
 
         public SoundSourcePotControl PotControl = new SoundSourcePotControl { Dock = DockStyle.Fill };
         public SoundSourceSampleControl SampleControl = new SoundSourceSampleControl { Dock = DockStyle.Fill };
+        public SoundSourceEffectsControl EffectsControl = new SoundSourceEffectsControl { Dock = DockStyle.Fill };
         public bool RandomChecked { get; private set; }
         public EventHandler SoundChanged;
         public EventHandler PlaybackToggled;
@@ -18,13 +19,19 @@ namespace MarathonSoundGen
 
         #region Private Properties
 
-        private SplitContainer master_SplitContainer = new SplitContainer
+        private SplitContainer upper_SplitContainer = new SplitContainer
         {
             Dock = DockStyle.Fill,
             Orientation = Orientation.Horizontal,
             SplitterDistance = 30,
             IsSplitterFixed = true,
-            FixedPanel = FixedPanel.Panel1
+            FixedPanel = FixedPanel.Panel1,
+        };
+
+        private SplitContainer lower_SplitContainer = new SplitContainer
+        {
+            Dock = DockStyle.Fill,
+            Orientation = Orientation.Horizontal,
         };
 
         #endregion
@@ -53,9 +60,11 @@ namespace MarathonSoundGen
         {
             InitializeComponent();
 
-            this.Controls.Add(master_SplitContainer);
-            master_SplitContainer.Panel1.Controls.Add(SampleControl);
-            master_SplitContainer.Panel2.Controls.Add(PotControl);
+            this.Controls.Add(upper_SplitContainer);
+            upper_SplitContainer.Panel1.Controls.Add(SampleControl);
+            upper_SplitContainer.Panel2.Controls.Add(lower_SplitContainer);
+            lower_SplitContainer.Panel1.Controls.Add(PotControl);
+            lower_SplitContainer.Panel2.Controls.Add(EffectsControl);
 
             switch (format)
             {
@@ -69,8 +78,9 @@ namespace MarathonSoundGen
 
             SampleControl.SoundSourceChanged += SampleControl_SoundSourceChanged;
             SampleControl.RandomCheckedChanged += SampleControl_RandomCheckedChanged;
-            PotControl.SoundPropertyChanged += PotControl_SoundPropertyChanged;
             SampleControl.PlayStopButton.Click += PlayPauseButton_Click;
+            PotControl.SoundPropertyChanged += PotControl_SoundPropertyChanged;
+            EffectsControl.EffectChanged += EffectsControl_EffectChanged;
         }
 
         #endregion
@@ -102,6 +112,11 @@ namespace MarathonSoundGen
         {
             RandomChecked = SampleControl.IsRandom;
             HandleSoundPropertyChanged();
+        }
+
+        private void EffectsControl_EffectChanged(object? sender, EventArgs e)
+        {
+            
         }
 
         #endregion
