@@ -5,20 +5,50 @@ namespace MarathonSoundGen.Forms
 {
     public partial class QuickAuditionForm : Form
     {
+
+        #region Private Properties
+
         private int mSampleRate = 44100;
         private List<SndEntry> mSndEntries = new List<SndEntry>();
         private List<SoundDefinition> mDefinitions = new List<SoundDefinition>();
         private SoundDefinition mCurrentDef;
         private SoundPermutation mCurrentPerm;
+        private WaveOut mOutputDevice;
+        WaveFormat mFormat;
+        private MemoryStream mSoundStream;
+        private RawSourceWaveStream mRawStream;
+
+        #endregion
+
+        #region Constructor
 
         public QuickAuditionForm(List<SoundDefinition> definitions)
         {
             InitializeComponent();
             mDefinitions = definitions;
-            mCurrentDef = mDefinitions.First();
+
+            List<SoundPermutation> perms = new List<SoundPermutation>();
+            int defIndex = 0;
+
+            while (perms.Count == 0)
+            {
+                mCurrentDef = mDefinitions[defIndex];
+                perms = mCurrentDef.Permutations;
+
+                if (perms.Count > 0)
+                {
+                    break;
+                }
+
+                defIndex++;
+            }
+
             mCurrentPerm = mCurrentDef.Permutations.First();
+
             UpdateControls();
         }
+
+        #endregion
 
         private void nextClick(object sender, EventArgs e)
         {
@@ -38,16 +68,12 @@ namespace MarathonSoundGen.Forms
                 }
                 catch (Exception ex2)
                 {
-                    string generatedCode =
-                        "public static List<SoundId> IDs = new List<SoundId>\r\n" +
-                        "{\r\n";
+                    string generatedCsv = "Id,Index,Name,SampleRate\r\n";
 
                     foreach (SndEntry ent in mSndEntries)
                     {
-                        generatedCode += $"\tnew SoundId({ent.ID}, {ent.Index}, \"{ent.Name}\"), // Sample rate: {ent.SampleRate}\r\n";
+                        generatedCsv += $"{ent.ID},{ent.Index},{ent.Name},{ent.SampleRate}\r\n";
                     }
-
-                    generatedCode += "};\r\n";
 
                     using (Form popup = new Form())
                     using (TextBox textBox = new TextBox())
@@ -65,7 +91,7 @@ namespace MarathonSoundGen.Forms
                         textBox.WordWrap = false;
                         textBox.Dock = DockStyle.Fill;
                         textBox.Font = new Font("Consolas", 10.0f);
-                        textBox.Text = generatedCode ?? string.Empty;
+                        textBox.Text = generatedCsv ?? string.Empty;
 
                         closeButton.Text = "Close";
                         closeButton.Dock = DockStyle.Bottom;
@@ -86,6 +112,8 @@ namespace MarathonSoundGen.Forms
 
                         popup.ShowDialog();
                     }
+
+                    this.Close();
                 }
             }
 
@@ -94,19 +122,17 @@ namespace MarathonSoundGen.Forms
 
         private void hearItButtonClick(object sender, EventArgs e)
         {
-            WaveOut outputDevice;
+            
             int channels = mCurrentPerm.Header.Stereo ? 2 : 1;
 
-            WaveFormat format = new WaveFormat(mSampleRate, mCurrentPerm.Header.BitsPerSample, channels);
+            mFormat = new WaveFormat(mSampleRate, mCurrentPerm.Header.BitsPerSample, channels);
 
-            using (MemoryStream soundStream = new MemoryStream(mCurrentPerm.Data, false))
-            using (RawSourceWaveStream rawStream = new RawSourceWaveStream(soundStream, format))
-            using (LoopStream loopStream = new LoopStream(rawStream))
-            {
-                outputDevice = new WaveOut();
-                outputDevice.Init(loopStream);
-                outputDevice.Play();
-            }
+            mSoundStream = new MemoryStream(mCurrentPerm.Data, false);
+            mRawStream = new RawSourceWaveStream(mSoundStream, mFormat);
+
+            mOutputDevice = new WaveOut();
+            mOutputDevice.Init(mRawStream);
+            mOutputDevice.Play();
         }
 
         private void UpdateControls()
@@ -119,6 +145,13 @@ namespace MarathonSoundGen.Forms
             slotTxt.Text = (mCurrentPerm.Permutation + 1).ToString();
         }
 
+        private void sampleRateChanged(object sender, EventArgs e)
+        {
+            mSampleRate = (int)sampleRateNud.Value;
+        }
+
+        #region Classes
+
         private class SndEntry
         {
             public short ID { get; set; }
@@ -127,76 +160,7 @@ namespace MarathonSoundGen.Forms
             public int SampleRate { get; set; }
         }
 
-        private void sampleRateChanged(object sender, EventArgs e)
-        {
-            mSampleRate = (int)sampleRateNud.Value;
-        }
+        #endregion
 
-        private sealed class LoopStream : WaveStream
-        {
-            private readonly WaveStream mSourceStream;
-
-            public LoopStream(WaveStream sourceStream)
-            {
-                if (sourceStream == null)
-                    throw new ArgumentNullException(nameof(sourceStream));
-
-                if (!sourceStream.CanSeek)
-                {
-                    throw new ArgumentException(
-                        "The source stream must support seeking.",
-                        nameof(sourceStream));
-                }
-
-                mSourceStream = sourceStream;
-            }
-
-            public override WaveFormat WaveFormat
-            {
-                get { return mSourceStream.WaveFormat; }
-            }
-
-            public override long Length
-            {
-                get { return long.MaxValue; }
-            }
-
-            public override long Position
-            {
-                get { return mSourceStream.Position; }
-                set { mSourceStream.Position = value; }
-            }
-
-            public override int Read(byte[] buffer, int offset, int count)
-            {
-                int totalBytesRead = 0;
-
-                while (totalBytesRead < count)
-                {
-                    int bytesRead = mSourceStream.Read(
-                        buffer,
-                        offset + totalBytesRead,
-                        count - totalBytesRead);
-
-                    if (bytesRead == 0)
-                    {
-                        mSourceStream.Position = 0;
-                        continue;
-                    }
-
-                    totalBytesRead += bytesRead;
-                }
-
-                return totalBytesRead;
-            }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    mSourceStream.Dispose();
-
-                base.Dispose(disposing);
-            }
-        }
     }
 }

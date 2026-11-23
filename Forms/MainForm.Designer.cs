@@ -54,9 +54,6 @@
             comfortNoiseToolStripMenuItem = new ToolStripMenuItem();
             equalizerToolStripMenuItem = new ToolStripMenuItem();
             feedbackDelayToolStripMenuItem = new ToolStripMenuItem();
-            removeCurrentEffectToolStripMenuItem = new ToolStripMenuItem();
-            currentSoundFile_toolStripLabel = new ToolStripLabel();
-            soundSources_TabControl = new TabControl();
             flangerToolStripMenuItem = new ToolStripMenuItem();
             gateToolStripMenuItem = new ToolStripMenuItem();
             limiterToolStripMenuItem = new ToolStripMenuItem();
@@ -67,6 +64,10 @@
             stereoWidthToolStripMenuItem = new ToolStripMenuItem();
             transientShaperToolStripMenuItem = new ToolStripMenuItem();
             tremoloToolStripMenuItem = new ToolStripMenuItem();
+            removeCurrentEffectToolStripMenuItem = new ToolStripMenuItem();
+            currentSoundFile_toolStripLabel = new ToolStripLabel();
+            soundSources_TabControl = new TabControl();
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem = new ToolStripMenuItem();
             toolStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -82,7 +83,7 @@
             // file_dropDownButton
             // 
             file_dropDownButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            file_dropDownButton.DropDownItems.AddRange(new ToolStripItem[] { loadSoundscapeToolStripMenuItem, saveSoundscapeToolStripMenuItem, loadMarathonSoundsFileToolStripMenuItem });
+            file_dropDownButton.DropDownItems.AddRange(new ToolStripItem[] { loadSoundscapeToolStripMenuItem, saveSoundscapeToolStripMenuItem, loadMarathonSoundsFileToolStripMenuItem, auditionGenerateSoundDefinitioncsvToolStripMenuItem });
             file_dropDownButton.ImageTransparentColor = Color.Magenta;
             file_dropDownButton.Name = "file_dropDownButton";
             file_dropDownButton.Size = new Size(38, 22);
@@ -92,7 +93,7 @@
             // 
             loadSoundscapeToolStripMenuItem.Name = "loadSoundscapeToolStripMenuItem";
             loadSoundscapeToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
-            loadSoundscapeToolStripMenuItem.Size = new Size(258, 22);
+            loadSoundscapeToolStripMenuItem.Size = new Size(287, 22);
             loadSoundscapeToolStripMenuItem.Text = "Load Soundscape";
             loadSoundscapeToolStripMenuItem.Click += LoadSoundscapeFileClick;
             // 
@@ -100,7 +101,7 @@
             // 
             saveSoundscapeToolStripMenuItem.Name = "saveSoundscapeToolStripMenuItem";
             saveSoundscapeToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
-            saveSoundscapeToolStripMenuItem.Size = new Size(258, 22);
+            saveSoundscapeToolStripMenuItem.Size = new Size(287, 22);
             saveSoundscapeToolStripMenuItem.Text = "Save Soundscape";
             saveSoundscapeToolStripMenuItem.Click += SaveSoundscapeFileClick;
             // 
@@ -108,7 +109,7 @@
             // 
             loadMarathonSoundsFileToolStripMenuItem.Name = "loadMarathonSoundsFileToolStripMenuItem";
             loadMarathonSoundsFileToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.L;
-            loadMarathonSoundsFileToolStripMenuItem.Size = new Size(258, 22);
+            loadMarathonSoundsFileToolStripMenuItem.Size = new Size(287, 22);
             loadMarathonSoundsFileToolStripMenuItem.Text = "Load Marathon Sounds File";
             loadMarathonSoundsFileToolStripMenuItem.Click += loadMarathonSoundsFileToolStripMenuItem_Click;
             // 
@@ -125,14 +126,14 @@
             // 
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Y;
-            undoToolStripMenuItem.Size = new Size(144, 22);
+            undoToolStripMenuItem.Size = new Size(180, 22);
             undoToolStripMenuItem.Text = "Undo";
             // 
             // redoToolStripMenuItem
             // 
             redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
-            redoToolStripMenuItem.Size = new Size(144, 22);
+            redoToolStripMenuItem.Size = new Size(180, 22);
             redoToolStripMenuItem.Text = "Redo";
             // 
             // soundScape_dropDownButton
@@ -266,32 +267,6 @@
             feedbackDelayToolStripMenuItem.Text = "Feedback-Delay-Network Reverb";
             feedbackDelayToolStripMenuItem.Click += AddFeedbackDelayNetReverbEffect;
             // 
-            // removeCurrentEffectToolStripMenuItem
-            // 
-            removeCurrentEffectToolStripMenuItem.Name = "removeCurrentEffectToolStripMenuItem";
-            removeCurrentEffectToolStripMenuItem.Size = new Size(288, 22);
-            removeCurrentEffectToolStripMenuItem.Text = "Remove Current Effect";
-            removeCurrentEffectToolStripMenuItem.Click += RemoveEffectClick;
-            // 
-            // currentSoundFile_toolStripLabel
-            // 
-            currentSoundFile_toolStripLabel.Name = "currentSoundFile_toolStripLabel";
-            currentSoundFile_toolStripLabel.Size = new Size(131, 22);
-            currentSoundFile_toolStripLabel.Text = "No Sounds File Loaded.";
-            currentSoundFile_toolStripLabel.ToolTipText = "Current Sounds File";
-            // 
-            // soundSources_TabControl
-            // 
-            soundSources_TabControl.Dock = DockStyle.Fill;
-            soundSources_TabControl.Location = new Point(0, 25);
-            soundSources_TabControl.Margin = new Padding(4, 3, 4, 3);
-            soundSources_TabControl.Multiline = true;
-            soundSources_TabControl.Name = "soundSources_TabControl";
-            soundSources_TabControl.SelectedIndex = 0;
-            soundSources_TabControl.Size = new Size(933, 494);
-            soundSources_TabControl.TabIndex = 2;
-            soundSources_TabControl.SelectedIndexChanged += TabSwitched;
-            // 
             // flangerToolStripMenuItem
             // 
             flangerToolStripMenuItem.Name = "flangerToolStripMenuItem";
@@ -362,6 +337,39 @@
             tremoloToolStripMenuItem.Text = "Tremolo";
             tremoloToolStripMenuItem.Click += AddTremeloEffect;
             // 
+            // removeCurrentEffectToolStripMenuItem
+            // 
+            removeCurrentEffectToolStripMenuItem.Name = "removeCurrentEffectToolStripMenuItem";
+            removeCurrentEffectToolStripMenuItem.Size = new Size(288, 22);
+            removeCurrentEffectToolStripMenuItem.Text = "Remove Current Effect";
+            removeCurrentEffectToolStripMenuItem.Click += RemoveEffectClick;
+            // 
+            // currentSoundFile_toolStripLabel
+            // 
+            currentSoundFile_toolStripLabel.Name = "currentSoundFile_toolStripLabel";
+            currentSoundFile_toolStripLabel.Size = new Size(131, 22);
+            currentSoundFile_toolStripLabel.Text = "No Sounds File Loaded.";
+            currentSoundFile_toolStripLabel.ToolTipText = "Current Sounds File";
+            // 
+            // soundSources_TabControl
+            // 
+            soundSources_TabControl.Dock = DockStyle.Fill;
+            soundSources_TabControl.Location = new Point(0, 25);
+            soundSources_TabControl.Margin = new Padding(4, 3, 4, 3);
+            soundSources_TabControl.Multiline = true;
+            soundSources_TabControl.Name = "soundSources_TabControl";
+            soundSources_TabControl.SelectedIndex = 0;
+            soundSources_TabControl.Size = new Size(933, 494);
+            soundSources_TabControl.TabIndex = 2;
+            soundSources_TabControl.SelectedIndexChanged += TabSwitched;
+            // 
+            // auditionGenerateSoundDefinitioncsvToolStripMenuItem
+            // 
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Name = "auditionGenerateSoundDefinitioncsvToolStripMenuItem";
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Size = new Size(287, 22);
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Text = "Audition/Generate Sound Definition .csv";
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Click += Audition_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -420,6 +428,7 @@
         private ToolStripMenuItem stereoWidthToolStripMenuItem;
         private ToolStripMenuItem transientShaperToolStripMenuItem;
         private ToolStripMenuItem tremoloToolStripMenuItem;
+        private ToolStripMenuItem auditionGenerateSoundDefinitioncsvToolStripMenuItem;
     }
 }
 

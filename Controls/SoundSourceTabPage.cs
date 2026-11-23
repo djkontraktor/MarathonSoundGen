@@ -1,4 +1,5 @@
 ﻿using MarathonFileUtils.Sounds;
+using MarathonFileUtils.Sounds.SoundIds;
 using MarathonSoundGen.Controls.Effects;
 using MarathonSoundsPlayer;
 
@@ -68,10 +69,13 @@ namespace MarathonSoundGen.Controls
             switch (format)
             {
                 case SoundsFileFormat.M1:
-                    SampleControl.PopulateSamples(M1SoundIds.IDs);
+                    SampleControl.PopulateSamples(SoundIdLoader.Marathon1SoundIds);
                     break;
                 case SoundsFileFormat.M2:
-                    SampleControl.PopulateSamples(M2SoundIds.IDs);
+                    SampleControl.PopulateSamples(SoundIdLoader.Marathon2SoundIds);
+                    break;
+                case SoundsFileFormat.Rubicon:
+                    SampleControl.PopulateSamples(SoundIdLoader.RubiconSoundIds);
                     break;
             }
 

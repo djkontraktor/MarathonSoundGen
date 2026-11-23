@@ -83,6 +83,21 @@ namespace MarathonSoundGen.Forms
             }
         }
 
+        private void Audition_Click(object sender, EventArgs e)
+        {
+            string filePath = PromptSelectSoundFile();
+
+            if (!string.IsNullOrWhiteSpace(filePath))
+            {
+                List<SoundDefinition> definitions = Utils.OpenM2SoundFile(filePath);
+
+                using (QuickAuditionForm form = new QuickAuditionForm(definitions))
+                {
+                    form.ShowDialog();
+                }
+            }
+        }
+
         private void AllSoundSources_TogglePlaybackClick(object sender, EventArgs e)
         {
             if (mSoundEngine.SoundsFileLoaded)
