@@ -416,7 +416,7 @@ namespace MarathonSoundGen.Forms
                 dialog.Title = "Open Marathon Sounds File";
 
                 // The dialog may display .sndA and extensionless files.
-                dialog.Filter = "Aleph One Format (*.sndA)|*.sndA|M1A1 Format (*.sndZ)|*.sndZ|Marathon Format (*.*)|*.*";
+                dialog.Filter = "Aleph One Format (*.sndA;*.sndZ)|*.sndA;*.sndZ|Marathon Format (*.*)|*.*";
 
                 dialog.FilterIndex = 1;
                 dialog.CheckFileExists = true;
