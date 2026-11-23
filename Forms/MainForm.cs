@@ -150,7 +150,12 @@ namespace MarathonSoundGen.Forms
 
                 if (source.Effects[effectIndex] is ReverbEffect reverb)
                 {
-                    reverb.Bypass = effect.Key.Bypassed;
+                    ReverbEffectTabPage effectPage = effect.Key as ReverbEffectTabPage;
+                    reverb.Bypass = effectPage.Bypassed;
+                    reverb.Mix = (float)effectPage.Mix;
+                    reverb.RoomSize = (float)effectPage.RoomSize;
+                    reverb.Damping = (float)effectPage.Damping;
+                    reverb.Width = (float)effectPage.Width;
                 }
             }
 

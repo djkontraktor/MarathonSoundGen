@@ -1,4 +1,5 @@
 ﻿using MarathonSoundsPlayer;
+using NAudio.Gui;
 
 namespace MarathonSoundGen.Controls.Effects
 {
@@ -9,6 +10,7 @@ namespace MarathonSoundGen.Controls.Effects
 
         public EventHandler EffectChanged;
         public bool Bypassed;
+        public double Mix = 1;
 
         #endregion
 
@@ -26,6 +28,8 @@ namespace MarathonSoundGen.Controls.Effects
             Appearance = Appearance.Button,
             Text = "Bypass",
         };
+
+        protected LabeledPot mix_Pot = new LabeledPot("Dry/Wet");
 
         #endregion
 
@@ -52,6 +56,11 @@ namespace MarathonSoundGen.Controls.Effects
             this.Controls.Add(controls_Table);
             bypass_CheckBox.CheckedChanged += BypassChanged;
             controls_Table.Controls.Add(bypass_CheckBox);
+            mix_Pot.Pot.Minimum = 0;
+            mix_Pot.Pot.Maximum = 1;
+            mix_Pot.Pot.Value = 1;
+            mix_Pot.Pot.ValueChanged += MixPot_ValueChanged;
+            controls_Table.Controls.Add(mix_Pot);
         }
 
         private void PopulateControlsBase(SoundSource soundSource)
@@ -62,6 +71,12 @@ namespace MarathonSoundGen.Controls.Effects
         private void BypassChanged(object? sender, EventArgs e)
         {
             Bypassed = bypass_CheckBox.Checked;
+            HandleEffectChanged();
+        }
+
+        private void MixPot_ValueChanged(object? sender, EventArgs e)
+        {
+            Mix = mix_Pot.Value;
             HandleEffectChanged();
         }
 
