@@ -9,7 +9,6 @@
 
         #endregion
 
-
         public SoundSourceEffectsControl()
         {
             InitializeComponent();

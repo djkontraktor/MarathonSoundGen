@@ -2,7 +2,7 @@
 
 namespace MarathonSoundGen.Controls.Effects
 {
-    public partial class ReverbEffectTabPage : TabPage
+    public class ReverbEffectTabPage : EffectTabPage
     {
 
         #region Public Properties
@@ -44,9 +44,7 @@ namespace MarathonSoundGen.Controls.Effects
 
         private void ConstructBase()
         {
-            InitializeComponent();
             controls_Table.RowStyles.Add(new RowStyle(SizeType.Percent));
-
             this.Controls.Add(controls_Table);
         }
 

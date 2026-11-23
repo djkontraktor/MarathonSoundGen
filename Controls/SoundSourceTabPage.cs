@@ -4,7 +4,7 @@ using MarathonSoundsPlayer;
 
 namespace MarathonSoundGen.Controls
 {
-    public partial class SoundSourceTabPage : TabPage
+    public class SoundSourceTabPage : TabPage
     {
 
         #region Public Properties
@@ -59,8 +59,6 @@ namespace MarathonSoundGen.Controls
 
         private void ConstructBase(SoundsFileFormat format)
         {
-            InitializeComponent();
-
             this.Controls.Add(upper_SplitContainer);
             upper_SplitContainer.Panel1.Controls.Add(SampleControl);
             upper_SplitContainer.Panel2.Controls.Add(lower_SplitContainer);
@@ -117,7 +115,7 @@ namespace MarathonSoundGen.Controls
 
         private void EffectsControl_EffectChanged(object? sender, EventArgs e)
         {
-            
+
         }
 
         #endregion
