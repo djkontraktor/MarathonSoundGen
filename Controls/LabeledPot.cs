@@ -1,7 +1,7 @@
 ﻿using NAudio.Gui;
 using System.ComponentModel;
 
-namespace MarathonSoundGen
+namespace MarathonSoundGen.Controls
 {
     public partial class LabeledPot : UserControl
     {

@@ -1,4 +1,4 @@
-﻿namespace MarathonSoundGen
+﻿namespace MarathonSoundGen.Controls.Effects
 {
     public partial class SoundSourceEffectsControl : UserControl
     {

@@ -1,7 +1,7 @@
 ﻿using MarathonFileUtils.Sounds;
 using NAudio.Wave;
 
-namespace MarathonSoundGen
+namespace MarathonSoundGen.Forms
 {
     public partial class QuickAuditionForm : Form
     {

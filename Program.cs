@@ -1,3 +1,5 @@
+using MarathonSoundGen.Forms;
+
 namespace MarathonSoundGen
 {
     internal static class Program

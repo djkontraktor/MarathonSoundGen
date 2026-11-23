@@ -1,4 +1,4 @@
-﻿namespace MarathonSoundGen
+﻿namespace MarathonSoundGen.Controls
 {
     partial class SoundSourceSampleControl
     {

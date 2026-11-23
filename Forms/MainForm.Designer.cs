@@ -1,4 +1,4 @@
-﻿namespace MarathonSoundGen
+﻿namespace MarathonSoundGen.Forms
 {
     partial class MainForm
     {

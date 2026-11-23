@@ -1,7 +1,8 @@
 ﻿using MarathonFileUtils.Sounds;
+using MarathonSoundGen.Controls.Effects;
 using MarathonSoundsPlayer;
 
-namespace MarathonSoundGen
+namespace MarathonSoundGen.Controls
 {
     public partial class SoundSourceTabPage : TabPage
     {

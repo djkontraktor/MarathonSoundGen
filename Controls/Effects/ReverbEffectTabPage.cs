@@ -1,6 +1,6 @@
 ﻿using MarathonSoundsPlayer;
 
-namespace MarathonSoundGen
+namespace MarathonSoundGen.Controls.Effects
 {
     public partial class ReverbEffectTabPage : TabPage
     {

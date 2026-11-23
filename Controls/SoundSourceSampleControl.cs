@@ -1,7 +1,7 @@
 ﻿using MarathonFileUtils.Sounds;
 using System.ComponentModel;
 
-namespace MarathonSoundGen
+namespace MarathonSoundGen.Controls
 {
     public partial class SoundSourceSampleControl : UserControl
     {
