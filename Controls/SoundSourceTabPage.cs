@@ -115,7 +115,7 @@ namespace MarathonSoundGen.Controls
 
         private void EffectsControl_EffectChanged(object? sender, EventArgs e)
         {
-
+            HandleSoundPropertyChanged();
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using MarathonSoundsPlayer;
+using System.ComponentModel;
 
 namespace MarathonSoundGen.Controls.Effects
 {
@@ -7,18 +8,25 @@ namespace MarathonSoundGen.Controls.Effects
 
         #region Public Properties
 
-        public EventHandler ControlChanged;
+        /// <summary>Room size, 0 (small) to 1 (large). Default 0.5.</summary>
+        [DefaultValue(0.5d)]
+        public double RoomSize { get; set; } = 0.5f;
+
+        /// <summary>High-frequency damping, 0 (bright) to 1 (dark). Default 0.5.</summary>
+        [DefaultValue(0.5d)]
+        public double Damping { get; set; } = 0.5f;
+
+        /// <summary>Stereo width of the reverb, 0 (mono) to 1 (wide). Default 1.</summary>
+        [DefaultValue(0.5d)]
+        public double Width { get; set; } = 1f;
 
         #endregion
 
         #region Private Properties
 
-        private TableLayoutPanel controls_Table = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            ColumnCount = 5,
-            RowCount = 2,
-        };
+        private LabeledPot roomSize_Pot = new LabeledPot("Room Size");
+        private LabeledPot damping_Pot = new LabeledPot("Damping");
+        private LabeledPot width_Pot = new LabeledPot("Width");
 
         #endregion
 
@@ -27,61 +35,62 @@ namespace MarathonSoundGen.Controls.Effects
         /// <summary>
         /// Make a new default tab page.
         /// </summary>
-        public ReverbEffectTabPage()
+        public ReverbEffectTabPage() : base()
         {
-            ConstructBase();
+            Construct();
         }
 
         /// <summary>
         /// Make a tab page from an existing sound source and set its properties.
         /// </summary>
         /// <param name="soundSource"></param>
-        public ReverbEffectTabPage(SoundSource soundSource)
+        public ReverbEffectTabPage(SoundSource soundSource) : base(soundSource)
         {
-            ConstructBase();
+            Construct();
             PopulateControls(soundSource);
         }
-
-        private void ConstructBase()
-        {
-            controls_Table.RowStyles.Add(new RowStyle(SizeType.Percent));
-            this.Controls.Add(controls_Table);
-        }
-
-        #endregion
-
-        #region Control Callbacks
-
-
 
         #endregion
 
         #region Private Members
 
-        private void PopulateControls(SoundSource soundSource)
+        private void Construct()
         {
-            //PotControl.Volume = soundSource.Volume;
-            //PotControl.DeltaVolume = soundSource.RandomVolume;
-            //PotControl.DeltaVolumeOffset = soundSource.RandomVolumeOffset;
-            //PotControl.Pitch = soundSource.Pitch;
-            //PotControl.DeltaPitch = soundSource.RandomPitch;
-            //PotControl.DeltaPitchOffset = soundSource.RandomPitchOffset;
-            //PotControl.Pan = soundSource.Pan;
-            //PotControl.DeltaPan = soundSource.RandomPan;
-            //PotControl.DeltaPanOffset = soundSource.RandomPanOffset;
-            //PotControl.Frequency = soundSource.Frequency_Hz;
-            //PotControl.DeltaFrequency = soundSource.RandomFrequency_Hz;
-            //PotControl.DeltaFrequencyOffset = soundSource.RandomFrequencyOffset_Hz;
+            roomSize_Pot.Pot.Minimum = 0;
+            roomSize_Pot.Pot.Maximum = 1;
+            roomSize_Pot.Pot.Value = 0.5;
+            damping_Pot.Pot.Minimum = 0;
+            damping_Pot.Pot.Maximum = 1;
+            damping_Pot.Pot.Value = 0.5;
+            width_Pot.Pot.Minimum = 0;
+            width_Pot.Pot.Maximum = 1;
+            width_Pot.Pot.Value = 1;
+
+            roomSize_Pot.Pot.ValueChanged += Pot_ValueChanged;
+            damping_Pot.Pot.ValueChanged += Pot_ValueChanged;
+            width_Pot.Pot.ValueChanged += Pot_ValueChanged;
+
+            this.controls_Table.Controls.Add(roomSize_Pot);
+            this.controls_Table.Controls.Add(damping_Pot);
+            this.controls_Table.Controls.Add(width_Pot);
         }
 
-        private void HandleSoundPropertyChanged()
+        private void Pot_ValueChanged(object? sender, EventArgs e)
         {
-            EventHandler handler = ControlChanged;
+            UpdateValues();
+            HandleEffectChanged();
+        }
 
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+        private void PopulateControls(SoundSource soundSource)
+        {
+
+        }
+
+        private void UpdateValues()
+        {
+            RoomSize = roomSize_Pot.Pot.Value;
+            Damping = damping_Pot.Pot.Value;
+            Width = width_Pot.Pot.Value;
         }
 
         #endregion

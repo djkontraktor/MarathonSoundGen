@@ -1,6 +1,8 @@
 using MarathonFileUtils.Sounds;
 using MarathonSoundGen.Controls;
+using MarathonSoundGen.Controls.Effects;
 using MarathonSoundsPlayer;
+using NAudio.Effects;
 
 namespace MarathonSoundGen.Forms
 {
@@ -142,6 +144,16 @@ namespace MarathonSoundGen.Forms
             source.RandomFrequency_Hz = page.PotControl.DeltaFrequency;
             source.RandomFrequencyOffset_Hz = page.PotControl.DeltaFrequencyOffset;
 
+            foreach (KeyValuePair<EffectTabPage, IAudioEffect> effect in page.EffectsControl.EffectPages)
+            {
+                int effectIndex = source.Effects.IndexOf(effect.Value);
+
+                if (source.Effects[effectIndex] is ReverbEffect reverb)
+                {
+                    reverb.Bypass = effect.Key.Bypassed;
+                }
+            }
+
             try
             {
                 source.CurrentSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
@@ -207,122 +219,159 @@ namespace MarathonSoundGen.Forms
 
         private void AddReverbEffect(object sender, EventArgs e)
         {
-
+            ReverbEffect effect = new ReverbEffect();
+            AddEffectBase(effect);
         }
 
         private void AddConvolutionReverbEffect(object sender, EventArgs e)
         {
-
+            ConvolutionReverbEffect effect = new ConvolutionReverbEffect();
+            AddEffectBase(effect);
         }
 
         private void AddDelayEffect(object sender, EventArgs e)
         {
-
+            DelayEffect effect = new DelayEffect();
+            AddEffectBase(effect);
         }
 
         private void AddChorusEffect(object sender, EventArgs e)
         {
-
+            ChorusEffect effect = new ChorusEffect();
+            AddEffectBase(effect);
         }
 
         private void AddCompressorEffect(object sender, EventArgs e)
         {
-
+            CompressorEffect effect = new CompressorEffect();
+            AddEffectBase(effect);
         }
 
         private void AddAutoGainControlEffect(object sender, EventArgs e)
         {
-
+            AutomaticGainControlEffect effect = new AutomaticGainControlEffect();
+            AddEffectBase(effect);
         }
 
         private void AddBitcrusherEffect(object sender, EventArgs e)
         {
-
+            BitCrusherEffect effect = new BitCrusherEffect();
+            AddEffectBase(effect);
         }
 
         private void AddCabinetEffect(object sender, EventArgs e)
         {
-
+            // Can't find it
         }
 
         private void AddDcBlockerEffect(object sender, EventArgs e)
         {
-
+            DcBlockerEffect effect = new DcBlockerEffect();
+            AddEffectBase(effect);
         }
 
         private void AddDeEsserEffect(object sender, EventArgs e)
         {
-
+            DeEsserEffect effect = new DeEsserEffect();
+            AddEffectBase(effect);
         }
 
         private void AddComfortNoiseEffect(object sender, EventArgs e)
         {
-
+            ComfortNoiseEffect effect = new ComfortNoiseEffect();
+            AddEffectBase(effect);
         }
 
         private void AddEqualizerEffect(object sender, EventArgs e)
         {
-
+            Equalizer effect = new Equalizer();
+            AddEffectBase(effect);
         }
 
         private void AddFeedbackDelayNetReverbEffect(object sender, EventArgs e)
         {
-
+            // Can't find
         }
 
         private void AddFlangerEffect(object sender, EventArgs e)
         {
-
+            FlangerEffect effect = new FlangerEffect();
+            AddEffectBase(effect);
         }
 
         private void AddGateEffect(object sender, EventArgs e)
         {
-
+            GateEffect effect = new GateEffect();
+            AddEffectBase(effect);
         }
 
         private void AddLimiterEffect(object sender, EventArgs e)
         {
-
+            LimiterEffect effect = new LimiterEffect();
+            AddEffectBase(effect);
         }
 
         private void AddMultibandCompressorEffect(object sender, EventArgs e)
         {
-
+            MultibandCompressorEffect effect = new MultibandCompressorEffect();
+            AddEffectBase(effect);
         }
 
         private void AddNoiseSuppressionEffect(object sender, EventArgs e)
         {
-
+            NoiseSuppressionEffect effect = new NoiseSuppressionEffect();
+            AddEffectBase(effect);
         }
 
         private void AddPhaserEffect(object sender, EventArgs e)
         {
-
+            PhaserEffect effect = new PhaserEffect();
+            AddEffectBase(effect);
         }
 
         private void AddSaturationEffect(object sender, EventArgs e)
         {
-
+            SaturationEffect effect = new SaturationEffect();
+            AddEffectBase(effect);
         }
 
         private void AddStereoWidthEffect(object sender, EventArgs e)
         {
-
+            StereoWidthEffect effect = new StereoWidthEffect();
+            AddEffectBase(effect);
         }
 
         private void AddTransientShaperEffect(object sender, EventArgs e)
         {
-
+            TransientShaperEffect effect = new TransientShaperEffect();
+            AddEffectBase(effect);
         }
 
         private void AddTremeloEffect(object sender, EventArgs e)
         {
-
+            TremoloEffect effect = new TremoloEffect();
+            AddEffectBase(effect);
         }
 
         private void RemoveEffectClick(object sender, EventArgs e)
         {
 
+        }
+
+        private void AddEffectBase(IAudioEffect effect)
+        {
+            if (mSelectedPage == null || !soundSources_TabControl.TabPages.Contains(mSelectedPage))
+            {
+                return;
+            }
+
+            SoundSourcePages[mSelectedPage].Effects.Add(effect);
+            SoundSourceTabPage page = mSelectedPage as SoundSourceTabPage;
+
+            page.EffectsControl.AddEffect(effect);
+
+            EnsureValidSelectedTab();
+            UpdateControls();
         }
 
         private void TabSwitched(object sender, EventArgs e)

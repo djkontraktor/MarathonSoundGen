@@ -30,6 +30,7 @@
         {
             this.pot = new NAudio.Gui.Pot();
             this.value_TextBox = new System.Windows.Forms.TextBox();
+            this.title_Label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // pot
@@ -54,12 +55,22 @@
             this.value_TextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.value_TextBox.WordWrap = false;
             this.value_TextBox.TextChanged += new System.EventHandler(this.ValueChangedText);
+            //
+            // title_Label
+            //
+            this.title_Label.Dock = System.Windows.Forms.DockStyle.Top;
+            this.title_Label.Location = new System.Drawing.Point(0, 130);
+            this.title_Label.Name = "value_TextBox";
+            this.title_Label.Size = new System.Drawing.Size(150, 20);
+            this.title_Label.TabIndex = 1;
+            this.title_Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // LabeledPot
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.value_TextBox);
+            this.Controls.Add(this.title_Label);
             this.Controls.Add(this.pot);
             this.Name = "LabeledPot";
             this.ResumeLayout(false);
@@ -71,5 +82,6 @@
 
         private NAudio.Gui.Pot pot;
         private System.Windows.Forms.TextBox value_TextBox;
+        private System.Windows.Forms.Label title_Label;
     }
 }

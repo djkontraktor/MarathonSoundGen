@@ -33,9 +33,10 @@ namespace MarathonSoundGen.Controls
 
         #region Constructor
 
-        public LabeledPot()
+        public LabeledPot(string title)
         {
             InitializeComponent();
+            title_Label.Text = title;
             this.HandleCreated += LabeledPot_HandleCreated;
         }
 
