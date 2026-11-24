@@ -48,12 +48,10 @@
             compressorToolStripMenuItem = new ToolStripMenuItem();
             autoGainControlToolStripMenuItem = new ToolStripMenuItem();
             bitcrusherToolStripMenuItem = new ToolStripMenuItem();
-            cabinetToolStripMenuItem = new ToolStripMenuItem();
             dCBlockerToolStripMenuItem = new ToolStripMenuItem();
             deEsserToolStripMenuItem = new ToolStripMenuItem();
             comfortNoiseToolStripMenuItem = new ToolStripMenuItem();
             equalizerToolStripMenuItem = new ToolStripMenuItem();
-            feedbackDelayToolStripMenuItem = new ToolStripMenuItem();
             flangerToolStripMenuItem = new ToolStripMenuItem();
             gateToolStripMenuItem = new ToolStripMenuItem();
             limiterToolStripMenuItem = new ToolStripMenuItem();
@@ -171,7 +169,7 @@
             // 
             // addEffectToolStripMenuItem
             // 
-            addEffectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { reverbToolStripMenuItem, convolutionReverbToolStripMenuItem, delayToolStripMenuItem, chorusToolStripMenuItem, compressorToolStripMenuItem, autoGainControlToolStripMenuItem, bitcrusherToolStripMenuItem, cabinetToolStripMenuItem, dCBlockerToolStripMenuItem, deEsserToolStripMenuItem, comfortNoiseToolStripMenuItem, equalizerToolStripMenuItem, feedbackDelayToolStripMenuItem, flangerToolStripMenuItem, gateToolStripMenuItem, limiterToolStripMenuItem, multibandCompressorToolStripMenuItem, noiseSuppressionToolStripMenuItem, phaserToolStripMenuItem, saturationToolStripMenuItem, stereoWidthToolStripMenuItem, transientShaperToolStripMenuItem, tremoloToolStripMenuItem });
+            addEffectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { reverbToolStripMenuItem, convolutionReverbToolStripMenuItem, delayToolStripMenuItem, chorusToolStripMenuItem, compressorToolStripMenuItem, autoGainControlToolStripMenuItem, bitcrusherToolStripMenuItem, dCBlockerToolStripMenuItem, deEsserToolStripMenuItem, comfortNoiseToolStripMenuItem, equalizerToolStripMenuItem, flangerToolStripMenuItem, gateToolStripMenuItem, limiterToolStripMenuItem, multibandCompressorToolStripMenuItem, noiseSuppressionToolStripMenuItem, phaserToolStripMenuItem, saturationToolStripMenuItem, stereoWidthToolStripMenuItem, transientShaperToolStripMenuItem, tremoloToolStripMenuItem });
             addEffectToolStripMenuItem.Name = "addEffectToolStripMenuItem";
             addEffectToolStripMenuItem.Size = new Size(288, 22);
             addEffectToolStripMenuItem.Text = "Add Effect";
@@ -225,13 +223,6 @@
             bitcrusherToolStripMenuItem.Text = "Bitcrusher";
             bitcrusherToolStripMenuItem.Click += AddBitcrusherEffect;
             // 
-            // cabinetToolStripMenuItem
-            // 
-            cabinetToolStripMenuItem.Name = "cabinetToolStripMenuItem";
-            cabinetToolStripMenuItem.Size = new Size(247, 22);
-            cabinetToolStripMenuItem.Text = "Cabinet";
-            cabinetToolStripMenuItem.Click += AddCabinetEffect;
-            // 
             // dCBlockerToolStripMenuItem
             // 
             dCBlockerToolStripMenuItem.Name = "dCBlockerToolStripMenuItem";
@@ -259,13 +250,6 @@
             equalizerToolStripMenuItem.Size = new Size(247, 22);
             equalizerToolStripMenuItem.Text = "Equalizer";
             equalizerToolStripMenuItem.Click += AddEqualizerEffect;
-            // 
-            // feedbackDelayToolStripMenuItem
-            // 
-            feedbackDelayToolStripMenuItem.Name = "feedbackDelayToolStripMenuItem";
-            feedbackDelayToolStripMenuItem.Size = new Size(247, 22);
-            feedbackDelayToolStripMenuItem.Text = "Feedback-Delay-Network Reverb";
-            feedbackDelayToolStripMenuItem.Click += AddFeedbackDelayNetReverbEffect;
             // 
             // flangerToolStripMenuItem
             // 
@@ -412,12 +396,10 @@
         private ToolStripMenuItem compressorToolStripMenuItem;
         private ToolStripMenuItem autoGainControlToolStripMenuItem;
         private ToolStripMenuItem bitcrusherToolStripMenuItem;
-        private ToolStripMenuItem cabinetToolStripMenuItem;
         private ToolStripMenuItem dCBlockerToolStripMenuItem;
         private ToolStripMenuItem deEsserToolStripMenuItem;
         private ToolStripMenuItem comfortNoiseToolStripMenuItem;
         private ToolStripMenuItem equalizerToolStripMenuItem;
-        private ToolStripMenuItem feedbackDelayToolStripMenuItem;
         private ToolStripMenuItem flangerToolStripMenuItem;
         private ToolStripMenuItem gateToolStripMenuItem;
         private ToolStripMenuItem limiterToolStripMenuItem;

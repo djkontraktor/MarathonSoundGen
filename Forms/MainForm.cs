@@ -290,11 +290,6 @@ namespace MarathonSoundGen.Forms
             AddEffectBase(effect);
         }
 
-        private void AddCabinetEffect(object sender, EventArgs e)
-        {
-            // Can't find it
-        }
-
         private void AddDcBlockerEffect(object sender, EventArgs e)
         {
             DcBlockerEffect effect = new DcBlockerEffect();
@@ -317,11 +312,6 @@ namespace MarathonSoundGen.Forms
         {
             Equalizer effect = new Equalizer();
             AddEffectBase(effect);
-        }
-
-        private void AddFeedbackDelayNetReverbEffect(object sender, EventArgs e)
-        {
-            // Can't find
         }
 
         private void AddFlangerEffect(object sender, EventArgs e)
