@@ -36,7 +36,7 @@ namespace MarathonSoundGen.Controls
             }
         }
 
-        public event EventHandler SoundSourceChanged;
+        public event EventHandler SampleChanged;
         public event EventHandler RandomCheckedChanged;
 
         public Button PlayStopButton
@@ -84,7 +84,7 @@ namespace MarathonSoundGen.Controls
         {
             mSelectedId = soundName_ComboBox.SelectedItem as SoundId;
 
-            EventHandler handler = SoundSourceChanged;
+            EventHandler handler = SampleChanged;
 
             if (handler != null)
             {

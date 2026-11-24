@@ -53,7 +53,8 @@ namespace MarathonSoundGen.Forms
                 foreach (SoundSource soundSource in soundSources)
                 {
                     SoundSourceTabPage tabPage = new SoundSourceTabPage(soundSource);
-                    tabPage.SoundChanged += TabPageSoundChanged;
+                    tabPage.SoundPropertyChanged += SoundPropertyChanged;
+                    tabPage.SampleChanged += SampleChanged;
                     tabPage.PlaybackToggled += PlaybackToggled;
                     SoundSourcePages.Add(tabPage, soundSource);
                 }
@@ -130,7 +131,8 @@ namespace MarathonSoundGen.Forms
             {
                 SoundSlot firstSlot = mSoundEngine.SoundsFile.SoundSlots.First();
                 SoundSourceTabPage tabPage = new SoundSourceTabPage(mSoundEngine.Format) { Text = firstSlot.ID.Name, };
-                tabPage.SoundChanged += TabPageSoundChanged;
+                tabPage.SoundPropertyChanged += SoundPropertyChanged;
+                tabPage.SampleChanged += SampleChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
                 SoundSourcePages.Add(tabPage, new SoundSource(SoundSourceType.Ambient, mSoundEngine.Format, mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
                 UpdateControls();
@@ -141,7 +143,7 @@ namespace MarathonSoundGen.Forms
             }
         }
 
-        private void TabPageSoundChanged(object sender, EventArgs e)
+        private void SoundPropertyChanged(object sender, EventArgs e)
         {
             SoundSourceTabPage page = sender as SoundSourceTabPage;
             SoundSource source = SoundSourcePages[page];
@@ -173,6 +175,12 @@ namespace MarathonSoundGen.Forms
                     reverb.Width = (float)effectPage.Width;
                 }
             }
+        }
+
+        private void SampleChanged(object sender, EventArgs e)
+        {
+            SoundSourceTabPage page = sender as SoundSourceTabPage;
+            SoundSource source = SoundSourcePages[page];
 
             try
             {

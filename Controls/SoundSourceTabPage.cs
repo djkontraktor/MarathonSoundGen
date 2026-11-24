@@ -14,7 +14,8 @@ namespace MarathonSoundGen.Controls
         public SoundSourceSampleControl SampleControl = new SoundSourceSampleControl { Dock = DockStyle.Fill };
         public SoundSourceEffectsControl EffectsControl = new SoundSourceEffectsControl { Dock = DockStyle.Fill };
         public bool RandomChecked { get; private set; }
-        public EventHandler SoundChanged;
+        public EventHandler SoundPropertyChanged;
+        public EventHandler SampleChanged;
         public EventHandler PlaybackToggled;
 
         #endregion
@@ -79,7 +80,7 @@ namespace MarathonSoundGen.Controls
                     break;
             }
 
-            SampleControl.SoundSourceChanged += SampleControl_SoundSourceChanged;
+            SampleControl.SampleChanged += SampleControl_SampleChanged;
             SampleControl.RandomCheckedChanged += SampleControl_RandomCheckedChanged;
             SampleControl.PlayStopButton.Click += PlayPauseButton_Click;
             PotControl.SoundPropertyChanged += PotControl_SoundPropertyChanged;
@@ -105,10 +106,10 @@ namespace MarathonSoundGen.Controls
             HandleSoundPropertyChanged();
         }
 
-        private void SampleControl_SoundSourceChanged(object sender, EventArgs e)
+        private void SampleControl_SampleChanged(object sender, EventArgs e)
         {
             this.Text = SampleControl.SelectedId.Name;
-            HandleSoundPropertyChanged();
+            HandleSampleChanged();
         }
 
         private void SampleControl_RandomCheckedChanged(object sender, EventArgs e)
@@ -146,7 +147,17 @@ namespace MarathonSoundGen.Controls
 
         private void HandleSoundPropertyChanged()
         {
-            EventHandler handler = SoundChanged;
+            EventHandler handler = SoundPropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
+
+        private void HandleSampleChanged()
+        {
+            EventHandler handler = SampleChanged;
 
             if (handler != null)
             {
