@@ -91,7 +91,7 @@ namespace MarathonSoundGen.Forms
             {
                 List<SoundDefinition> definitions = Utils.OpenM2SoundFile(filePath, out string format);
 
-                using (QuickAuditionForm form = new QuickAuditionForm(definitions))
+                using (SoundIdForm form = new SoundIdForm(definitions))
                 {
                     form.ShowDialog();
                 }
