@@ -50,6 +50,8 @@ namespace MarathonSoundGen.Forms
 
         #endregion
 
+        #region Control Callbacks
+
         private void nextClick(object sender, EventArgs e)
         {
             int curDef = mDefinitions.IndexOf(mCurrentDef);
@@ -135,6 +137,15 @@ namespace MarathonSoundGen.Forms
             mOutputDevice.Play();
         }
 
+        private void sampleRateChanged(object sender, EventArgs e)
+        {
+            mSampleRate = (int)sampleRateNud.Value;
+        }
+
+        #endregion
+
+        #region Private Members
+
         private void UpdateControls()
         {
             source_Txt.Text = mCurrentPerm.Source.ToString();
@@ -145,10 +156,7 @@ namespace MarathonSoundGen.Forms
             slotTxt.Text = (mCurrentPerm.Permutation + 1).ToString();
         }
 
-        private void sampleRateChanged(object sender, EventArgs e)
-        {
-            mSampleRate = (int)sampleRateNud.Value;
-        }
+        #endregion
 
         #region Classes
 
