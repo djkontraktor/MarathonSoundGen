@@ -163,16 +163,19 @@ namespace MarathonSoundGen.Forms
 
             foreach (KeyValuePair<EffectTabPage, IAudioEffect> effect in page.EffectsControl.EffectPages)
             {
+                EffectTabPage etp = effect.Key;
+
                 int effectIndex = source.Effects.IndexOf(effect.Value);
 
                 if (source.Effects[effectIndex] is ReverbEffect reverb)
                 {
-                    ReverbEffectTabPage effectPage = effect.Key as ReverbEffectTabPage;
-                    reverb.Bypass = effectPage.Bypassed;
-                    reverb.Mix = (float)effectPage.Mix;
-                    reverb.RoomSize = (float)effectPage.RoomSize;
-                    reverb.Damping = (float)effectPage.Damping;
-                    reverb.Width = (float)effectPage.Width;
+                    List<IUserSetting> reverbSettings = etp.UserSettings.Where(s => s.EffectName.Equals("Reverb")).ToList();
+
+                    reverb.Bypass = etp.Bypassed;
+                    reverb.Mix = etp.Mix;
+                    reverb.RoomSize = (float)(reverbSettings.Where(r => r.ParamName.Equals("Room Size")).FirstOrDefault().UntypedValue);
+                    reverb.Damping = (float)(reverbSettings.Where(r => r.ParamName.Equals("Damping")).FirstOrDefault().UntypedValue);
+                    reverb.Width = (float)(reverbSettings.Where(r => r.ParamName.Equals("Width")).FirstOrDefault().UntypedValue);
                 }
             }
         }
