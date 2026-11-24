@@ -36,6 +36,13 @@ namespace MarathonSoundGen.Controls.Effects
                     Text = "Reverb",
                 };
             }
+            else if (effectName.Contains("automaticgaincontroleffect"))
+            {
+                effectPage = new AgcEffectTabPage
+                {
+                    Text = "Automatic Gain Control",
+                };
+            }    
             else
             {
                 effectPage = null;

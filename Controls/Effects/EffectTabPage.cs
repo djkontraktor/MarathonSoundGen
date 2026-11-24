@@ -17,6 +17,8 @@ namespace MarathonSoundGen.Controls.Effects
 
         #region Protected/Private Properties
 
+        protected string mEffectName;
+
         protected TableLayoutPanel controls_Table = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
@@ -61,12 +63,12 @@ namespace MarathonSoundGen.Controls.Effects
 
                 switch (p)
                 {
-                    case EffectParameter<float> dParam:
+                    case EffectParameter<float> fParam:
 
-                        LabeledPot pot = new LabeledPot(dParam.Name);
-                        pot.Pot.Minimum = dParam.MinValue;
-                        pot.Pot.Maximum = dParam.MaxValue;
-                        pot.Pot.Value = dParam.DefaultValue;
+                        LabeledPot pot = new LabeledPot(fParam.Name);
+                        pot.Pot.Maximum = fParam.MaxValue;
+                        pot.Pot.Minimum = fParam.MinValue;
+                        pot.Pot.Value = fParam.DefaultValue;
                         pot.Pot.ValueChanged += Pot_ValueChanged;
                         userControl = pot;
                         p.Control = pot;
@@ -141,10 +143,10 @@ namespace MarathonSoundGen.Controls.Effects
 
                 switch (p)
                 {
-                    case EffectParameter<float> dParam:
+                    case EffectParameter<float> fParam:
 
-                        LabeledPot pot = dParam.Control as LabeledPot;
-                        userSetting = new UserSetting<float>(dParam.EffectName, dParam.Name, (float)pot.Pot.Value);
+                        LabeledPot pot = fParam.Control as LabeledPot;
+                        userSetting = new UserSetting<float>(fParam.EffectName, fParam.Name, (float)pot.Pot.Value);
 
                         break;
 

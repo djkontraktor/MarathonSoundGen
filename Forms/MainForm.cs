@@ -177,6 +177,21 @@ namespace MarathonSoundGen.Forms
                     reverb.Damping = (float)(reverbSettings.Where(r => r.ParamName.Equals("Damping")).FirstOrDefault().UntypedValue);
                     reverb.Width = (float)(reverbSettings.Where(r => r.ParamName.Equals("Width")).FirstOrDefault().UntypedValue);
                 }
+
+                if (source.Effects[effectIndex] is AutomaticGainControlEffect agc)
+                {
+                    List<IUserSetting> agcSettings = etp.UserSettings.Where(s => s.EffectName.Equals("Automatic Gain Control")).ToList();
+
+                    agc.Bypass = etp.Bypassed;
+                    agc.Mix = etp.Mix;
+                    agc.TargetDb = (float)(agcSettings.Where(r => r.ParamName.Equals("Target (dB)")).FirstOrDefault().UntypedValue);
+                    agc.MaxGainDb = (float)(agcSettings.Where(r => r.ParamName.Equals("Max Gain (dB)")).FirstOrDefault().UntypedValue);
+                    agc.MinGainDb = (float)(agcSettings.Where(r => r.ParamName.Equals("Min Gain (dB)")).FirstOrDefault().UntypedValue);
+                    agc.RmsWindowMs = (float)(agcSettings.Where(r => r.ParamName.Equals("RMS Detector Window (ms)")).FirstOrDefault().UntypedValue);
+                    agc.UseVoiceDetection = (bool)(agcSettings.Where(r => r.ParamName.Equals("Voice Detection")).FirstOrDefault().UntypedValue);
+                    agc.AttackMs = (float)(agcSettings.Where(r => r.ParamName.Equals("Attack (ms)")).FirstOrDefault().UntypedValue);
+                    agc.ReleaseMs = (float)(agcSettings.Where(r => r.ParamName.Equals("Release (ms)")).FirstOrDefault().UntypedValue);
+                }
             }
         }
 
