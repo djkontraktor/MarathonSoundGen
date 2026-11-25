@@ -1,4 +1,4 @@
-﻿using MarathonFileUtils.Sounds;
+﻿using MarathonFileUtils.Sounds.DataStructures;
 using System.ComponentModel;
 
 namespace MarathonSoundGen.Controls

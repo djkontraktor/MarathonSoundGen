@@ -1,4 +1,5 @@
 using MarathonFileUtils.Sounds;
+using MarathonFileUtils.Sounds.DataStructures;
 using MarathonSoundGen.Controls;
 using MarathonSoundGen.Controls.Effects;
 using MarathonSoundsPlayer;
