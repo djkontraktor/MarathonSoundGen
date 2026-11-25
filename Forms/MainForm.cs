@@ -2,7 +2,11 @@ using MarathonFileUtils.Sounds;
 using MarathonSoundGen.Controls;
 using MarathonSoundGen.Controls.Effects;
 using MarathonSoundsPlayer;
+using MarathonSoundsPlayer.Interfaces;
+using MarathonSoundsPlayer.SoundBehavior;
+using MarathonSoundsPlayer.SoundProperties;
 using NAudio.Effects;
+using System.Collections.ObjectModel;
 
 namespace MarathonSoundGen.Forms
 {
@@ -103,7 +107,7 @@ namespace MarathonSoundGen.Forms
         {
             if (mSoundEngine.SoundsFileLoaded)
             {
-                bool[] votes = SoundSourcePages.Select(src => src.Value.Playing).ToArray();
+                bool[] votes = SoundSourcePages.Select(src => src.Value.SoundBehavior.Playing).ToArray();
 
                 bool majorityPlaying = (votes.Length > 0) && ((votes.Count(vote => vote) * 2) >= votes.Length);
 
@@ -134,7 +138,9 @@ namespace MarathonSoundGen.Forms
                 tabPage.SoundPropertyChanged += SoundPropertyChanged;
                 tabPage.SampleChanged += SampleChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
-                SoundSourcePages.Add(tabPage, new SoundSource(SoundSourceType.Ambient, mSoundEngine.Format, mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0));
+                EnvironmentalSoundProperties defaultProperties = new EnvironmentalSoundProperties(mSoundEngine, firstSlot, 1, 0, 0, 1, 0, 0, 0, 0, 0, new ObservableCollection<IAudioEffect>());
+                ISoundBehavior defaultBehavior = new AmbientSoundBehavior(defaultProperties);
+                SoundSourcePages.Add(tabPage, new SoundSource(defaultBehavior));
                 UpdateControls();
             }
             else
@@ -143,31 +149,48 @@ namespace MarathonSoundGen.Forms
             }
         }
 
+        private void AddPlatformClick(object sender, EventArgs e)
+        {
+
+        }
+
         private void SoundPropertyChanged(object sender, EventArgs e)
         {
             SoundSourceTabPage page = sender as SoundSourceTabPage;
             SoundSource source = SoundSourcePages[page];
-            source.SourceType = page.RandomChecked ? SoundSourceType.Random : SoundSourceType.Ambient;
-            source.Volume = page.PotControl.Volume;
-            source.RandomVolume = page.PotControl.DeltaVolume;
-            source.RandomVolumeOffset = page.PotControl.DeltaVolumeOffset;
-            source.Pitch = page.PotControl.Pitch;
-            source.RandomPitch = page.PotControl.DeltaPitch;
-            source.RandomPitchOffset = page.PotControl.DeltaPitchOffset;
-            source.Pan = page.PotControl.Pan;
-            source.RandomPan = page.PotControl.DeltaPan;
-            source.RandomPanOffset = page.PotControl.DeltaPanOffset;
-            source.Frequency_Hz = page.PotControl.Frequency;
-            source.RandomFrequency_Hz = page.PotControl.DeltaFrequency;
-            source.RandomFrequencyOffset_Hz = page.PotControl.DeltaFrequencyOffset;
+
+            ObservableCollection<IAudioEffect> effects = new ObservableCollection<IAudioEffect>(source.SoundBehavior.Effects);
+            ISoundBehavior newBehavior;
+
+            if (page.RandomChecked)
+            {
+                RandomSoundProperties properties = new RandomSoundProperties(mSoundEngine, source.SoundBehavior.CurrentSound,
+                    page.PotControl.Volume, page.PotControl.DeltaVolume, page.PotControl.DeltaVolumeOffset,
+                    page.PotControl.Pitch, page.PotControl.DeltaPitch, page.PotControl.DeltaPitchOffset,
+                    page.PotControl.Pan, page.PotControl.DeltaPan, page.PotControl.DeltaPanOffset,
+                    page.PotControl.Frequency, page.PotControl.DeltaFrequency, page.PotControl.DeltaFrequencyOffset, effects);
+
+                newBehavior = new RandomSoundBehavior(properties);
+            }
+            else
+            {
+                EnvironmentalSoundProperties properties = new EnvironmentalSoundProperties(mSoundEngine, source.SoundBehavior.CurrentSound,
+                    page.PotControl.Volume, page.PotControl.DeltaVolume, page.PotControl.DeltaVolumeOffset,
+                    page.PotControl.Pitch, page.PotControl.DeltaPitch, page.PotControl.DeltaPitchOffset,
+                    page.PotControl.Pan, page.PotControl.DeltaPan, page.PotControl.DeltaPanOffset, effects);
+
+                newBehavior = new AmbientSoundBehavior(properties);
+            }
+
+            source.SoundBehavior = newBehavior;
 
             foreach (KeyValuePair<EffectTabPage, IAudioEffect> effect in page.EffectsControl.EffectPages)
             {
                 EffectTabPage etp = effect.Key;
 
-                int effectIndex = source.Effects.IndexOf(effect.Value);
+                int effectIndex = source.SoundBehavior.Effects.IndexOf(effect.Value);
 
-                if (source.Effects[effectIndex] is ReverbEffect reverb)
+                if (source.SoundBehavior.Effects[effectIndex] is ReverbEffect reverb)
                 {
                     List<IUserSetting> reverbSettings = etp.UserSettings.Where(s => s.EffectName.Equals("Reverb")).ToList();
 
@@ -178,7 +201,7 @@ namespace MarathonSoundGen.Forms
                     reverb.Width = (float)(reverbSettings.Where(r => r.ParamName.Equals("Width")).FirstOrDefault().UntypedValue);
                 }
 
-                if (source.Effects[effectIndex] is AutomaticGainControlEffect agc)
+                if (source.SoundBehavior.Effects[effectIndex] is AutomaticGainControlEffect agc)
                 {
                     List<IUserSetting> agcSettings = etp.UserSettings.Where(s => s.EffectName.Equals("Automatic Gain Control")).ToList();
 
@@ -193,6 +216,8 @@ namespace MarathonSoundGen.Forms
                     agc.ReleaseMs = (float)(agcSettings.Where(r => r.ParamName.Equals("Release (ms)")).FirstOrDefault().UntypedValue);
                 }
             }
+
+            source.Start();
         }
 
         private void SampleChanged(object sender, EventArgs e)
@@ -202,7 +227,7 @@ namespace MarathonSoundGen.Forms
 
             try
             {
-                source.CurrentSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
+                source.SoundBehavior.CurrentSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
             }
             catch (Exception ex)
             {
@@ -216,7 +241,7 @@ namespace MarathonSoundGen.Forms
             {
                 SoundSourceTabPage page = sender as SoundSourceTabPage;
 
-                if (SoundSourcePages[page].Playing)
+                if (SoundSourcePages[page].SoundBehavior.Playing)
                 {
                     SoundSourcePages[page].Stop();
                 }
@@ -401,7 +426,7 @@ namespace MarathonSoundGen.Forms
                 return;
             }
 
-            SoundSourcePages[mSelectedPage].Effects.Add(effect);
+            SoundSourcePages[mSelectedPage].SoundBehavior.Effects.Add(effect);
             SoundSourceTabPage page = mSelectedPage as SoundSourceTabPage;
 
             page.EffectsControl.AddEffect(effect);

@@ -33,6 +33,7 @@
             loadSoundscapeToolStripMenuItem = new ToolStripMenuItem();
             saveSoundscapeToolStripMenuItem = new ToolStripMenuItem();
             loadMarathonSoundsFileToolStripMenuItem = new ToolStripMenuItem();
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem = new ToolStripMenuItem();
             edit_dropDownButton = new ToolStripDropDownButton();
             undoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem = new ToolStripMenuItem();
@@ -65,7 +66,7 @@
             removeCurrentEffectToolStripMenuItem = new ToolStripMenuItem();
             currentSoundFile_toolStripLabel = new ToolStripLabel();
             soundSources_TabControl = new TabControl();
-            auditionGenerateSoundDefinitioncsvToolStripMenuItem = new ToolStripMenuItem();
+            addPlatformToolStripMenuItem = new ToolStripMenuItem();
             toolStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -111,6 +112,13 @@
             loadMarathonSoundsFileToolStripMenuItem.Text = "Load Marathon Sounds File";
             loadMarathonSoundsFileToolStripMenuItem.Click += loadMarathonSoundsFileToolStripMenuItem_Click;
             // 
+            // auditionGenerateSoundDefinitioncsvToolStripMenuItem
+            // 
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Name = "auditionGenerateSoundDefinitioncsvToolStripMenuItem";
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Size = new Size(287, 22);
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Text = "Audition/Generate Sound Definition .csv";
+            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Click += Audition_Click;
+            // 
             // edit_dropDownButton
             // 
             edit_dropDownButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
@@ -124,20 +132,20 @@
             // 
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Y;
-            undoToolStripMenuItem.Size = new Size(180, 22);
+            undoToolStripMenuItem.Size = new Size(144, 22);
             undoToolStripMenuItem.Text = "Undo";
             // 
             // redoToolStripMenuItem
             // 
             redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
-            redoToolStripMenuItem.Size = new Size(180, 22);
+            redoToolStripMenuItem.Size = new Size(144, 22);
             redoToolStripMenuItem.Text = "Redo";
             // 
             // soundScape_dropDownButton
             // 
             soundScape_dropDownButton.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            soundScape_dropDownButton.DropDownItems.AddRange(new ToolStripItem[] { playAllToolStripMenuItem, addSoundSourceToolStripMenuItem, removeCurrentSoundSourceToolStripMenuItem, addEffectToolStripMenuItem, removeCurrentEffectToolStripMenuItem });
+            soundScape_dropDownButton.DropDownItems.AddRange(new ToolStripItem[] { playAllToolStripMenuItem, addSoundSourceToolStripMenuItem, addPlatformToolStripMenuItem, removeCurrentSoundSourceToolStripMenuItem, addEffectToolStripMenuItem, removeCurrentEffectToolStripMenuItem });
             soundScape_dropDownButton.ImageTransparentColor = Color.Magenta;
             soundScape_dropDownButton.Name = "soundScape_dropDownButton";
             soundScape_dropDownButton.Size = new Size(85, 22);
@@ -177,147 +185,147 @@
             // reverbToolStripMenuItem
             // 
             reverbToolStripMenuItem.Name = "reverbToolStripMenuItem";
-            reverbToolStripMenuItem.Size = new Size(247, 22);
+            reverbToolStripMenuItem.Size = new Size(196, 22);
             reverbToolStripMenuItem.Text = "Reverb";
             reverbToolStripMenuItem.Click += AddReverbEffect;
             // 
             // convolutionReverbToolStripMenuItem
             // 
             convolutionReverbToolStripMenuItem.Name = "convolutionReverbToolStripMenuItem";
-            convolutionReverbToolStripMenuItem.Size = new Size(247, 22);
+            convolutionReverbToolStripMenuItem.Size = new Size(196, 22);
             convolutionReverbToolStripMenuItem.Text = "Convolution Reverb";
             convolutionReverbToolStripMenuItem.Click += AddConvolutionReverbEffect;
             // 
             // delayToolStripMenuItem
             // 
             delayToolStripMenuItem.Name = "delayToolStripMenuItem";
-            delayToolStripMenuItem.Size = new Size(247, 22);
+            delayToolStripMenuItem.Size = new Size(196, 22);
             delayToolStripMenuItem.Text = "Delay";
             delayToolStripMenuItem.Click += AddDelayEffect;
             // 
             // chorusToolStripMenuItem
             // 
             chorusToolStripMenuItem.Name = "chorusToolStripMenuItem";
-            chorusToolStripMenuItem.Size = new Size(247, 22);
+            chorusToolStripMenuItem.Size = new Size(196, 22);
             chorusToolStripMenuItem.Text = "Chorus";
             chorusToolStripMenuItem.Click += AddChorusEffect;
             // 
             // compressorToolStripMenuItem
             // 
             compressorToolStripMenuItem.Name = "compressorToolStripMenuItem";
-            compressorToolStripMenuItem.Size = new Size(247, 22);
+            compressorToolStripMenuItem.Size = new Size(196, 22);
             compressorToolStripMenuItem.Text = "Compressor";
             compressorToolStripMenuItem.Click += AddCompressorEffect;
             // 
             // autoGainControlToolStripMenuItem
             // 
             autoGainControlToolStripMenuItem.Name = "autoGainControlToolStripMenuItem";
-            autoGainControlToolStripMenuItem.Size = new Size(247, 22);
+            autoGainControlToolStripMenuItem.Size = new Size(196, 22);
             autoGainControlToolStripMenuItem.Text = "Auto Gain Control";
             autoGainControlToolStripMenuItem.Click += AddAutoGainControlEffect;
             // 
             // bitcrusherToolStripMenuItem
             // 
             bitcrusherToolStripMenuItem.Name = "bitcrusherToolStripMenuItem";
-            bitcrusherToolStripMenuItem.Size = new Size(247, 22);
+            bitcrusherToolStripMenuItem.Size = new Size(196, 22);
             bitcrusherToolStripMenuItem.Text = "Bitcrusher";
             bitcrusherToolStripMenuItem.Click += AddBitcrusherEffect;
             // 
             // dCBlockerToolStripMenuItem
             // 
             dCBlockerToolStripMenuItem.Name = "dCBlockerToolStripMenuItem";
-            dCBlockerToolStripMenuItem.Size = new Size(247, 22);
+            dCBlockerToolStripMenuItem.Size = new Size(196, 22);
             dCBlockerToolStripMenuItem.Text = "DC Blocker";
             dCBlockerToolStripMenuItem.Click += AddDcBlockerEffect;
             // 
             // deEsserToolStripMenuItem
             // 
             deEsserToolStripMenuItem.Name = "deEsserToolStripMenuItem";
-            deEsserToolStripMenuItem.Size = new Size(247, 22);
+            deEsserToolStripMenuItem.Size = new Size(196, 22);
             deEsserToolStripMenuItem.Text = "De-Esser";
             deEsserToolStripMenuItem.Click += AddDeEsserEffect;
             // 
             // comfortNoiseToolStripMenuItem
             // 
             comfortNoiseToolStripMenuItem.Name = "comfortNoiseToolStripMenuItem";
-            comfortNoiseToolStripMenuItem.Size = new Size(247, 22);
+            comfortNoiseToolStripMenuItem.Size = new Size(196, 22);
             comfortNoiseToolStripMenuItem.Text = "Comfort Noise";
             comfortNoiseToolStripMenuItem.Click += AddComfortNoiseEffect;
             // 
             // equalizerToolStripMenuItem
             // 
             equalizerToolStripMenuItem.Name = "equalizerToolStripMenuItem";
-            equalizerToolStripMenuItem.Size = new Size(247, 22);
+            equalizerToolStripMenuItem.Size = new Size(196, 22);
             equalizerToolStripMenuItem.Text = "Equalizer";
             equalizerToolStripMenuItem.Click += AddEqualizerEffect;
             // 
             // flangerToolStripMenuItem
             // 
             flangerToolStripMenuItem.Name = "flangerToolStripMenuItem";
-            flangerToolStripMenuItem.Size = new Size(247, 22);
+            flangerToolStripMenuItem.Size = new Size(196, 22);
             flangerToolStripMenuItem.Text = "Flanger";
             flangerToolStripMenuItem.Click += AddFlangerEffect;
             // 
             // gateToolStripMenuItem
             // 
             gateToolStripMenuItem.Name = "gateToolStripMenuItem";
-            gateToolStripMenuItem.Size = new Size(247, 22);
+            gateToolStripMenuItem.Size = new Size(196, 22);
             gateToolStripMenuItem.Text = "Gate";
             gateToolStripMenuItem.Click += AddGateEffect;
             // 
             // limiterToolStripMenuItem
             // 
             limiterToolStripMenuItem.Name = "limiterToolStripMenuItem";
-            limiterToolStripMenuItem.Size = new Size(247, 22);
+            limiterToolStripMenuItem.Size = new Size(196, 22);
             limiterToolStripMenuItem.Text = "Limiter";
             limiterToolStripMenuItem.Click += AddLimiterEffect;
             // 
             // multibandCompressorToolStripMenuItem
             // 
             multibandCompressorToolStripMenuItem.Name = "multibandCompressorToolStripMenuItem";
-            multibandCompressorToolStripMenuItem.Size = new Size(247, 22);
+            multibandCompressorToolStripMenuItem.Size = new Size(196, 22);
             multibandCompressorToolStripMenuItem.Text = "Multiband Compressor";
             multibandCompressorToolStripMenuItem.Click += AddMultibandCompressorEffect;
             // 
             // noiseSuppressionToolStripMenuItem
             // 
             noiseSuppressionToolStripMenuItem.Name = "noiseSuppressionToolStripMenuItem";
-            noiseSuppressionToolStripMenuItem.Size = new Size(247, 22);
+            noiseSuppressionToolStripMenuItem.Size = new Size(196, 22);
             noiseSuppressionToolStripMenuItem.Text = "Noise Suppression";
             noiseSuppressionToolStripMenuItem.Click += AddNoiseSuppressionEffect;
             // 
             // phaserToolStripMenuItem
             // 
             phaserToolStripMenuItem.Name = "phaserToolStripMenuItem";
-            phaserToolStripMenuItem.Size = new Size(247, 22);
+            phaserToolStripMenuItem.Size = new Size(196, 22);
             phaserToolStripMenuItem.Text = "Phaser";
             phaserToolStripMenuItem.Click += AddPhaserEffect;
             // 
             // saturationToolStripMenuItem
             // 
             saturationToolStripMenuItem.Name = "saturationToolStripMenuItem";
-            saturationToolStripMenuItem.Size = new Size(247, 22);
+            saturationToolStripMenuItem.Size = new Size(196, 22);
             saturationToolStripMenuItem.Text = "Saturation";
             saturationToolStripMenuItem.Click += AddSaturationEffect;
             // 
             // stereoWidthToolStripMenuItem
             // 
             stereoWidthToolStripMenuItem.Name = "stereoWidthToolStripMenuItem";
-            stereoWidthToolStripMenuItem.Size = new Size(247, 22);
+            stereoWidthToolStripMenuItem.Size = new Size(196, 22);
             stereoWidthToolStripMenuItem.Text = "Stereo Width";
             stereoWidthToolStripMenuItem.Click += AddStereoWidthEffect;
             // 
             // transientShaperToolStripMenuItem
             // 
             transientShaperToolStripMenuItem.Name = "transientShaperToolStripMenuItem";
-            transientShaperToolStripMenuItem.Size = new Size(247, 22);
+            transientShaperToolStripMenuItem.Size = new Size(196, 22);
             transientShaperToolStripMenuItem.Text = "Transient Shaper";
             transientShaperToolStripMenuItem.Click += AddTransientShaperEffect;
             // 
             // tremoloToolStripMenuItem
             // 
             tremoloToolStripMenuItem.Name = "tremoloToolStripMenuItem";
-            tremoloToolStripMenuItem.Size = new Size(247, 22);
+            tremoloToolStripMenuItem.Size = new Size(196, 22);
             tremoloToolStripMenuItem.Text = "Tremolo";
             tremoloToolStripMenuItem.Click += AddTremeloEffect;
             // 
@@ -347,12 +355,12 @@
             soundSources_TabControl.TabIndex = 2;
             soundSources_TabControl.SelectedIndexChanged += TabSwitched;
             // 
-            // auditionGenerateSoundDefinitioncsvToolStripMenuItem
+            // addPlatformToolStripMenuItem
             // 
-            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Name = "auditionGenerateSoundDefinitioncsvToolStripMenuItem";
-            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Size = new Size(287, 22);
-            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Text = "Audition/Generate Sound Definition .csv";
-            auditionGenerateSoundDefinitioncsvToolStripMenuItem.Click += Audition_Click;
+            addPlatformToolStripMenuItem.Name = "addPlatformToolStripMenuItem";
+            addPlatformToolStripMenuItem.Size = new Size(288, 22);
+            addPlatformToolStripMenuItem.Text = "Add Platform";
+            addPlatformToolStripMenuItem.Click += AddPlatformClick;
             // 
             // MainForm
             // 
@@ -411,6 +419,7 @@
         private ToolStripMenuItem transientShaperToolStripMenuItem;
         private ToolStripMenuItem tremoloToolStripMenuItem;
         private ToolStripMenuItem auditionGenerateSoundDefinitioncsvToolStripMenuItem;
+        private ToolStripMenuItem addPlatformToolStripMenuItem;
     }
 }
 

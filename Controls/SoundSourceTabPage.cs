@@ -2,6 +2,7 @@
 using MarathonFileUtils.Sounds.SoundIds;
 using MarathonSoundGen.Controls.Effects;
 using MarathonSoundsPlayer;
+using MarathonSoundsPlayer.SoundBehavior;
 
 namespace MarathonSoundGen.Controls
 {
@@ -55,7 +56,7 @@ namespace MarathonSoundGen.Controls
         /// <param name="soundSource"></param>
         public SoundSourceTabPage(SoundSource soundSource)
         {
-            ConstructBase(soundSource.Format);
+            ConstructBase(soundSource.SoundBehavior.Format);
             PopulateControls(soundSource);
         }
 
@@ -129,20 +130,20 @@ namespace MarathonSoundGen.Controls
 
         private void PopulateControls(SoundSource soundSource)
         {
-            SampleControl.SelectedId = soundSource.CurrentSound.ID;
-            SampleControl.IsRandom = soundSource.SourceType.Equals(SoundSourceType.Random);
-            PotControl.Volume = soundSource.Volume;
-            PotControl.DeltaVolume = soundSource.RandomVolume;
-            PotControl.DeltaVolumeOffset = soundSource.RandomVolumeOffset;
-            PotControl.Pitch = soundSource.Pitch;
-            PotControl.DeltaPitch = soundSource.RandomPitch;
-            PotControl.DeltaPitchOffset = soundSource.RandomPitchOffset;
-            PotControl.Pan = soundSource.Pan;
-            PotControl.DeltaPan = soundSource.RandomPan;
-            PotControl.DeltaPanOffset = soundSource.RandomPanOffset;
-            PotControl.Frequency = soundSource.Frequency_Hz;
-            PotControl.DeltaFrequency = soundSource.RandomFrequency_Hz;
-            PotControl.DeltaFrequencyOffset = soundSource.RandomFrequencyOffset_Hz;
+            //SampleControl.SelectedId = soundSource.SoundBehavior.CurrentSound.ID;
+            SampleControl.IsRandom = soundSource.SoundBehavior is RandomSoundBehavior;
+            PotControl.Volume = soundSource.SoundBehavior.Volume;
+            PotControl.DeltaVolume = soundSource.SoundBehavior.RandomVolume;
+            PotControl.DeltaVolumeOffset = soundSource.SoundBehavior.RandomVolumeOffset;
+            PotControl.Pitch = soundSource.SoundBehavior.Pitch;
+            PotControl.DeltaPitch = soundSource.SoundBehavior.RandomPitch;
+            PotControl.DeltaPitchOffset = soundSource.SoundBehavior.RandomPitchOffset;
+            PotControl.Pan = soundSource.SoundBehavior.Pan;
+            PotControl.DeltaPan = soundSource.SoundBehavior.RandomPan;
+            PotControl.DeltaPanOffset = soundSource.SoundBehavior.RandomPanOffset;
+            PotControl.Frequency = soundSource.SoundBehavior.Frequency_Hz;
+            PotControl.DeltaFrequency = soundSource.SoundBehavior.RandomFrequency_Hz;
+            PotControl.DeltaFrequencyOffset = soundSource.SoundBehavior.RandomFrequencyOffset_Hz;
         }
 
         private void HandleSoundPropertyChanged()
