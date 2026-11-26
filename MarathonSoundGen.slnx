@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="../../MacFileUtils/MacFileUtils/MacFileUtils.csproj" />
-  <Project Path="../../MarathonFileUtils/MarathonFileUtils/MarathonFileUtils.csproj" />
-  <Project Path="../../MarathonSoundsPlayer/MarathonSoundsPlayer/MarathonSoundsPlayer.csproj" />
+  <Project Path="../MacFileUtils/MacFileUtils.csproj" />
+  <Project Path="../MarathonFileUtils/MarathonFileUtils.csproj" />
+  <Project Path="../MarathonSoundsPlayer/MarathonSoundsPlayer/MarathonSoundsPlayer.csproj" />
   <Project Path="MarathonSoundGen.csproj" />
 </Solution>

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MarathonSoundsPlayer\MarathonSoundsPlayer\MarathonSoundsPlayer.csproj" />
+    <ProjectReference Include="..\MarathonSoundsPlayer\MarathonSoundsPlayer\MarathonSoundsPlayer.csproj" />
   </ItemGroup>
 
 </Project>
