@@ -57,7 +57,7 @@ namespace MarathonSoundGen.Forms
 
                 foreach (SoundSource soundSource in soundSources)
                 {
-                    SoundSourceTabPage tabPage = new SoundSourceTabPage(soundSource);
+                    SoundSourceTabPage tabPage = new SoundSourceTabPage(soundSource, SoundSourceType.Ambient);
                     tabPage.SoundPropertyChanged += SoundPropertyChanged;
                     tabPage.SampleChanged += SampleChanged;
                     tabPage.PlaybackToggled += PlaybackToggled;
@@ -135,7 +135,7 @@ namespace MarathonSoundGen.Forms
             if (mSoundEngine.SoundsFileLoaded)
             {
                 SoundSlot firstSlot = mSoundEngine.SoundsFile.SoundSlots.First();
-                SoundSourceTabPage tabPage = new SoundSourceTabPage(mSoundEngine.Format) { Text = firstSlot.ID.Name, };
+                SoundSourceTabPage tabPage = new SoundSourceTabPage(mSoundEngine.Format, SoundSourceType.Ambient) { Text = firstSlot.ID.Name, };
                 tabPage.SoundPropertyChanged += SoundPropertyChanged;
                 tabPage.SampleChanged += SampleChanged;
                 tabPage.PlaybackToggled += PlaybackToggled;
@@ -152,7 +152,22 @@ namespace MarathonSoundGen.Forms
 
         private void AddPlatformClick(object sender, EventArgs e)
         {
-
+            if (mSoundEngine.SoundsFileLoaded)
+            {
+                SoundSlot firstSlot = mSoundEngine.SoundsFile.SoundSlots.First();
+                SoundSourceTabPage tabPage = new SoundSourceTabPage(mSoundEngine.Format, SoundSourceType.Platform) { Text = firstSlot.ID.Name, };
+                tabPage.SoundPropertyChanged += SoundPropertyChanged;
+                tabPage.SampleChanged += SampleChanged;
+                tabPage.PlaybackToggled += PlaybackToggled;
+                SoundPropertiesPlatform defaultProperties = new SoundPropertiesPlatform(mSoundEngine, firstSlot, firstSlot, firstSlot, firstSlot, firstSlot, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, new ObservableCollection<IAudioEffect>());
+                ISoundBehavior defaultBehavior = new PlatformSoundBehavior(defaultProperties);
+                SoundSourcePages.Add(tabPage, new SoundSource(defaultBehavior));
+                UpdateControls();
+            }
+            else
+            {
+                ShowLoadSoundsFileErrorDialog();
+            }
         }
 
         private void SoundPropertyChanged(object sender, EventArgs e)
@@ -226,13 +241,30 @@ namespace MarathonSoundGen.Forms
             SoundSourceTabPage page = sender as SoundSourceTabPage;
             SoundSource source = SoundSourcePages[page];
 
-            try
+            if (source.SoundBehavior is RandomSoundBehavior || source.SoundBehavior is AmbientSoundBehavior)
             {
-                source.SoundBehavior.CurrentSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
-            }
-            catch (Exception ex)
-            {
+                try
+                {
+                    source.SoundBehavior.CurrentSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.SampleControl.SelectedId).First();
+                }
+                catch (Exception ex)
+                {
 
+                }
+            }
+            else if (source.SoundBehavior is PlatformSoundBehavior psb)
+            {
+                try
+                {
+                    source.SoundBehavior.PlatformStartExtendSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.PlatSampleControl.StartExtendSound).First();
+                    source.SoundBehavior.PlatformStopExtendSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.PlatSampleControl.StopExtendSound).First();
+                    source.SoundBehavior.PlatformStartRetractSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.PlatSampleControl.StartRetractSound).First();
+                    source.SoundBehavior.PlatformStopRetractSound = mSoundEngine.SoundsFile.SoundSlots.Where(s => s.ID == page.PlatSampleControl.StopRetractSound).First();
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
         }
 
